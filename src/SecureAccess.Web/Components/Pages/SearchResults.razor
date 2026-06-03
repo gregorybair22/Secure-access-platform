@@ -1,0 +1,57 @@
+@page "/search"
+@attribute [Authorize]
+@rendermode InteractiveServer
+@inject SecureAccess.Application.Features.Search.ISearchService Search
+
+<PageTitle>Search - Secure Access</PageTitle>
+
+<h1>Search</h1>
+
+<div class="input-group mb-3" style="max-width:500px">
+    <input class="form-control" placeholder="Customer, code, machine, serial, RustDesk/AnyDesk ID, VPN server, IP..." @bind="_query" @onkeyup="OnKey" />
+    <button class="btn btn-primary" @onclick="Run">Search</button>
+</div>
+
+@if (_hits is not null)
+{
+    <table class="table table-striped">
+        <thead><tr><th>Type</th><th>Result</th><th>Detail</th><th>Matched On</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var h in _hits)
+            {
+                <tr>
+                    <td><span class="badge bg-secondary">@h.Kind</span></td>
+                    <td>@h.Title</td>
+                    <td>@h.Subtitle</td>
+                    <td>@h.MatchedOn</td>
+                    <td class="text-end">
+                        @if (h.Kind == SecureAccess.Application.Features.Search.SearchResultKind.Machine)
+                        { <a class="btn btn-sm btn-outline-success" href="/request-access?machineId=@h.MachineId">Request</a> }
+                        else if (h.Kind == SecureAccess.Application.Features.Search.SearchResultKind.Client)
+                        { <a class="btn btn-sm btn-outline-primary" href="/machines?clientId=@h.ClientId">Machines</a> }
+                    </td>
+                </tr>
+            }
+            @if (_hits.Count == 0) { <tr><td colspan="5" class="text-muted">No matches.</td></tr> }
+        </tbody>
+    </table>
+}
+
+@code {
+    [SupplyParameterFromQuery(Name = "q")] public string? Q { get; set; }
+    private string? _query;
+    private List<SecureAccess.Application.Features.Search.SearchHit>? _hits;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(Q)) { _query = Q; await Run(); }
+    }
+
+    private async Task OnKey(KeyboardEventArgs e) { if (e.Key == "Enter") await Run(); }
+
+    private async Task Run()
+    {
+        if (string.IsNullOrWhiteSpace(_query)) { _hits = new(); return; }
+        _hits = (await Search.SearchAsync(_query)).ToList();
+    }
+}

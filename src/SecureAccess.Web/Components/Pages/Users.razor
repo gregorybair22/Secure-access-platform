@@ -1,0 +1,104 @@
+@page "/users"
+@attribute [Authorize(Policy = "perm:users.manage")]
+@rendermode InteractiveServer
+@inject SecureAccess.Application.Features.Users.IUserService UserSvc
+
+<PageTitle>Users - Secure Access</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Users</h1>
+    <button class="btn btn-primary" @onclick="StartNew">New User</button>
+</div>
+
+@if (_editing is not null)
+{
+    <div class="card mb-3">
+        <div class="card-header">@(_editingId == 0 ? "New User" : "Edit User")</div>
+        <div class="card-body">
+            @if (!string.IsNullOrEmpty(_error)) { <div class="alert alert-danger py-2">@_error</div> }
+            <div class="row g-2">
+                <div class="col-md-4"><label class="form-label">Username *</label><input class="form-control" @bind="_userName" disabled="@(_editingId != 0)" /></div>
+                <div class="col-md-4"><label class="form-label">Full Name</label><input class="form-control" @bind="_fullName" /></div>
+                <div class="col-md-4"><label class="form-label">Email</label><input class="form-control" @bind="_email" /></div>
+                <div class="col-md-4"><label class="form-label">@(_editingId == 0 ? "Password *" : "Reset Password")</label><input class="form-control" type="text" @bind="_password" /></div>
+                <div class="col-md-4"><label class="form-label">Status</label>
+                    <select class="form-select" @bind="_status">@foreach (var s in Enum.GetValues<EntityStatus>()) { <option value="@s">@s</option> }</select>
+                </div>
+                <div class="col-md-4"><label class="form-label">Roles</label>
+                    @foreach (var r in _roles)
+                    {
+                        <div class="form-check"><input class="form-check-input" type="checkbox" checked="@_selectedRoles.Contains(r.Id)" @onchange="e => ToggleRole(r.Id, (bool)e.Value!)" id="r@(r.Id)" /><label class="form-check-label" for="r@(r.Id)">@r.Name</label></div>
+                    }
+                </div>
+            </div>
+            <div class="mt-3">
+                <button class="btn btn-success" @onclick="Save">Save</button>
+                <button class="btn btn-secondary" @onclick="() => _editing = null">Cancel</button>
+            </div>
+        </div>
+    </div>
+}
+
+<table class="table table-striped">
+    <thead><tr><th>Username</th><th>Name</th><th>Email</th><th>Roles</th><th>Status</th><th>Last Login</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var u in _items)
+        {
+            <tr>
+                <td>@u.UserName</td><td>@u.FullName</td><td>@u.Email</td>
+                <td>@string.Join(", ", u.Roles)</td><td>@u.Status</td>
+                <td>@(u.LastLoginUtc?.ToLocalTime().ToString("g") ?? "-")</td>
+                <td class="text-end"><button class="btn btn-sm btn-outline-primary" @onclick="() => Edit(u)">Edit</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<SecureAccess.Application.Features.Users.UserDto> _items = new();
+    private List<SecureAccess.Application.Features.Users.RoleDto> _roles = new();
+
+    private bool? _editing;
+    private int _editingId;
+    private string _userName = "", _fullName = "", _email = "", _password = "";
+    private EntityStatus _status = EntityStatus.Active;
+    private readonly HashSet<int> _selectedRoles = new();
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _roles = (await UserSvc.GetRolesAsync()).ToList();
+        await Reload();
+    }
+
+    private async Task Reload() => _items = (await UserSvc.GetUsersAsync()).ToList();
+
+    private void StartNew()
+    {
+        _editing = true; _editingId = 0; _error = null;
+        _userName = ""; _fullName = ""; _email = ""; _password = ""; _status = EntityStatus.Active;
+        _selectedRoles.Clear();
+    }
+
+    private void Edit(SecureAccess.Application.Features.Users.UserDto u)
+    {
+        _editing = true; _editingId = u.Id; _error = null;
+        _userName = u.UserName; _fullName = u.FullName; _email = u.Email; _password = ""; _status = u.Status;
+        _selectedRoles.Clear();
+        foreach (var r in _roles.Where(r => u.Roles.Contains(r.Name))) _selectedRoles.Add(r.Id);
+    }
+
+    private void ToggleRole(int id, bool on) { if (on) _selectedRoles.Add(id); else _selectedRoles.Remove(id); }
+
+    private async Task Save()
+    {
+        Result result;
+        if (_editingId == 0)
+            result = await UserSvc.CreateUserAsync(new() { UserName = _userName, FullName = _fullName, Email = _email, Password = _password, RoleIds = _selectedRoles.ToList() });
+        else
+            result = await UserSvc.UpdateUserAsync(_editingId, new() { FullName = _fullName, Email = _email, Status = _status, RoleIds = _selectedRoles.ToList(), NewPassword = string.IsNullOrWhiteSpace(_password) ? null : _password });
+        if (!result.Succeeded) { _error = result.Error; return; }
+        _editing = null;
+        await Reload();
+    }
+}

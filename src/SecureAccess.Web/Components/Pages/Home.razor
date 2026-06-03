@@ -1,0 +1,89 @@
+@page "/"
+@attribute [Authorize(Policy = "perm:dashboard.view")]
+@rendermode InteractiveServer
+@inject SecureAccess.Application.Features.Dashboard.IDashboardService Dashboard
+
+<PageTitle>Dashboard - Secure Access</PageTitle>
+
+<h1>Dashboard</h1>
+
+@if (_data is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="row g-3 mb-3">
+        <div class="col-md-3">@Metric("Accesses Today", _data.AccessesToday)</div>
+        <div class="col-md-3">@Metric("This Week", _data.AccessesThisWeek)</div>
+        <div class="col-md-3">@Metric("This Month", _data.AccessesThisMonth)</div>
+        <div class="col-md-3">@Metric("Active Sessions", _data.ActiveUsers)</div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-3">@Metric("Clients", _data.TotalClients)</div>
+        <div class="col-md-3">@Metric("Machines", _data.TotalMachines)</div>
+        <div class="col-md-3">@Metric("Credentials", _data.TotalCredentials)</div>
+        <div class="col-md-3">@Metric("Failed Logins (mo)", _data.FailedLoginAttempts, _data.FailedLoginAttempts > 0)</div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card"><div class="card-header">Most Active Technicians</div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var t in _data.MostActiveTechnicians)
+                    { <li class="list-group-item d-flex justify-content-between"><span>@t.Name</span><span class="badge bg-primary">@t.Count</span></li> }
+                    @if (_data.MostActiveTechnicians.Count == 0) { <li class="list-group-item text-muted">No data</li> }
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card"><div class="card-header">Most Accessed Customers</div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var t in _data.MostAccessedCustomers)
+                    { <li class="list-group-item d-flex justify-content-between"><span>@t.Name</span><span class="badge bg-primary">@t.Count</span></li> }
+                    @if (_data.MostAccessedCustomers.Count == 0) { <li class="list-group-item text-muted">No data</li> }
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card"><div class="card-header">Most Accessed Machines</div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var t in _data.MostAccessedMachines)
+                    { <li class="list-group-item d-flex justify-content-between"><span>@t.Name</span><span class="badge bg-primary">@t.Count</span></li> }
+                    @if (_data.MostAccessedMachines.Count == 0) { <li class="list-group-item text-muted">No data</li> }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-3">
+        <div class="card-header">Security &amp; Audit</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3"><strong>Unauthorized attempts:</strong> @_data.UnauthorizedAccessAttempts</div>
+                <div class="col-md-3"><strong>Out-of-hours accesses:</strong> @_data.AccessesOutsideWorkingHours</div>
+                <div class="col-md-3"><strong>Last credential viewed:</strong> @Fmt(_data.LastCredentialViewedUtc) @(_data.LastCredentialViewedBy)</div>
+                <div class="col-md-3"><strong>Last bulk update:</strong> @Fmt(_data.LastBulkUpdateUtc)</div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private SecureAccess.Application.Features.Dashboard.DashboardData? _data;
+
+    protected override async Task OnInitializedAsync() => _data = await Dashboard.GetAsync();
+
+    private static string Fmt(DateTime? d) => d?.ToLocalTime().ToString("g") ?? "-";
+
+    private RenderFragment Metric(string label, int value, bool warn = false) => __builder =>
+    {
+        <div class="card text-center @(warn ? "border-danger" : "")">
+            <div class="card-body">
+                <div class="display-6">@value</div>
+                <div class="text-muted small">@label</div>
+            </div>
+        </div>
+    };
+}

@@ -1,0 +1,63 @@
+@page "/roles"
+@attribute [Authorize(Policy = "perm:roles.manage")]
+@rendermode InteractiveServer
+@inject SecureAccess.Application.Features.Users.IUserService Users
+
+<PageTitle>Roles - Secure Access</PageTitle>
+
+<h1>Roles &amp; Permissions</h1>
+@if (!string.IsNullOrEmpty(_message)) { <div class="alert alert-success">@_message</div> }
+
+@foreach (var role in _roles)
+{
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between">
+            <strong>@role.Name</strong>
+            <button class="btn btn-sm btn-success" @onclick="() => Save(role)">Save</button>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                @foreach (var group in _allPermissions.GroupBy(p => p.Category))
+                {
+                    <div class="col-md-3 mb-2">
+                        <strong>@group.Key</strong>
+                        @foreach (var p in group)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox"
+                                       checked="@role.Permissions.Contains(p.Code)"
+                                       @onchange="e => Toggle(role, p.Code, (bool)e.Value!)"
+                                       id="@(role.Id)-@p.Code" />
+                                <label class="form-check-label small" for="@(role.Id)-@p.Code">@p.Name</label>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<SecureAccess.Application.Features.Users.RoleDto> _roles = new();
+    private List<(string Code, string Name, string Category)> _allPermissions = new();
+    private string? _message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _roles = (await Users.GetRolesAsync()).ToList();
+        _allPermissions = Permissions.All.Select(kv => (kv.Key, kv.Value.Name, kv.Value.Category)).ToList();
+    }
+
+    private void Toggle(SecureAccess.Application.Features.Users.RoleDto role, string code, bool on)
+    {
+        if (on) { if (!role.Permissions.Contains(code)) role.Permissions.Add(code); }
+        else role.Permissions.Remove(code);
+    }
+
+    private async Task Save(SecureAccess.Application.Features.Users.RoleDto role)
+    {
+        await Users.UpdateRolePermissionsAsync(role.Id, role.Permissions.ToList());
+        _message = $"Saved permissions for {role.Name}.";
+    }
+}

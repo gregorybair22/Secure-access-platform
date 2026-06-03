@@ -1,0 +1,106 @@
+@page "/login"
+@attribute [AllowAnonymous]
+@layout EmptyLayout
+
+<PageTitle>Sign in - Secure Access</PageTitle>
+
+<div class="login-page">
+    <div class="login-card">
+        <div class="login-brand">
+            <div class="login-brand-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="11" width="14" height="10" rx="2"/>
+                    <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+                </svg>
+            </div>
+            <h1>Secure Access</h1>
+            <p>Credential Management Platform</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Error))
+        {
+            <div class="login-alert" role="alert">@Error</div>
+        }
+
+        <form action="/account/login" method="post" id="login-form">
+            <input type="hidden" name="returnUrl" value="@ReturnUrl" />
+
+            <div class="login-field">
+                <label for="userName">Username</label>
+                <div class="login-input-wrap">
+                    <span class="login-input-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </span>
+                    <input id="userName" class="login-input" name="userName" placeholder="admin" autofocus required autocomplete="username" />
+                </div>
+            </div>
+
+            <div class="login-field">
+                <label for="password">Password</label>
+                <div class="login-input-wrap">
+                    <span class="login-input-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="11" width="14" height="10" rx="2"/>
+                            <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+                        </svg>
+                    </span>
+                    <input id="password" class="login-input" name="password" type="password" placeholder="••••••••" required autocomplete="current-password" />
+                    <button type="button" class="login-password-toggle" id="toggle-password" aria-label="Show password" title="Show password">
+                        <svg id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        <svg id="icon-eye-slash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                            <line x1="1" y1="1" x2="23" y2="23"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="login-options">
+                <label class="login-remember">
+                    <input type="checkbox" name="rememberMe" value="true" checked />
+                    <span>Remember me</span>
+                </label>
+                <a class="login-forgot" href="/change-password">Forgot password?</a>
+            </div>
+
+            <button class="login-submit" type="submit">Sign in</button>
+        </form>
+
+        <div class="login-security">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>Protected by enterprise-grade security</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var input = document.getElementById('password');
+        var btn = document.getElementById('toggle-password');
+        var eye = document.getElementById('icon-eye-off');
+        var eyeSlash = document.getElementById('icon-eye-slash');
+        if (!input || !btn) return;
+        btn.addEventListener('click', function () {
+            var show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            eye.style.display = show ? 'none' : 'block';
+            eyeSlash.style.display = show ? 'block' : 'none';
+            btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+            btn.setAttribute('title', show ? 'Hide password' : 'Show password');
+        });
+    })();
+</script>
+
+@code {
+    [SupplyParameterFromQuery] public string? Error { get; set; }
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
+}

@@ -1,0 +1,98 @@
+@page "/bulk"
+@attribute [Authorize(Policy = "perm:bulk.operations")]
+@rendermode InteractiveServer
+@inject SecureAccess.Application.Features.Bulk.IBulkService BulkSvc
+@inject SecureAccess.Application.Features.Machines.IMachineService MachineSvc
+@inject SecureAccess.Application.Features.Clients.IClientService ClientSvc
+
+<PageTitle>Bulk Operations - Secure Access</PageTitle>
+
+<h1>Bulk Operations</h1>
+@if (!string.IsNullOrEmpty(_message)) { <div class="alert alert-success">@_message</div> }
+@if (!string.IsNullOrEmpty(_error)) { <div class="alert alert-danger">@_error</div> }
+
+<div class="card mb-3">
+    <div class="card-header">Copy Credentials: Machine → Machines</div>
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-md-6"><label class="form-label">Source machine</label>
+                <select class="form-select" @bind="_srcMachine">
+                    <option value="0">-- select --</option>
+                    @foreach (var m in _machines) { <option value="@m.Id">@m.ClientName / @m.Name</option> }
+                </select>
+            </div>
+            <div class="col-md-6"><label class="form-label">Target machines</label>
+                <select class="form-select" multiple size="5" @onchange="e => _tgtMachines = ToIds(e)">
+                    @foreach (var m in _machines) { <option value="@m.Id">@m.ClientName / @m.Name</option> }
+                </select>
+            </div>
+        </div>
+        @Options(v => _mFill = v, v => _mOver = v, _mFill, _mOver, "m")
+        <button class="btn btn-primary mt-2" @onclick="CopyMachines">Copy</button>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">Copy Credentials: Client → Clients</div>
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-md-6"><label class="form-label">Source client</label>
+                <select class="form-select" @bind="_srcClient">
+                    <option value="0">-- select --</option>
+                    @foreach (var c in _clients) { <option value="@c.Id">@c.Name</option> }
+                </select>
+            </div>
+            <div class="col-md-6"><label class="form-label">Target clients</label>
+                <select class="form-select" multiple size="5" @onchange="e => _tgtClients = ToIds(e)">
+                    @foreach (var c in _clients) { <option value="@c.Id">@c.Name</option> }
+                </select>
+            </div>
+        </div>
+        @Options(v => _cFill = v, v => _cOver = v, _cFill, _cOver, "c")
+        <button class="btn btn-primary mt-2" @onclick="CopyClients">Copy</button>
+    </div>
+</div>
+
+@code {
+    private List<SecureAccess.Application.Features.Machines.MachineDto> _machines = new();
+    private List<SecureAccess.Application.Features.Clients.ClientDto> _clients = new();
+    private int _srcMachine, _srcClient;
+    private List<int> _tgtMachines = new(), _tgtClients = new();
+    private bool _mFill, _mOver, _cFill, _cOver;
+    private string? _message, _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _machines = (await MachineSvc.GetMachinesAsync(null, null, 1, 500)).Items.ToList();
+        _clients = (await ClientSvc.GetClientsAsync(null, 1, 500)).Items.ToList();
+    }
+
+    private static List<int> ToIds(ChangeEventArgs e)
+        => (e.Value as string[])?.Select(v => int.TryParse(v, out var i) ? i : 0).Where(i => i > 0).ToList() ?? new();
+
+    private RenderFragment Options(Action<bool> setFill, Action<bool> setOver, bool fill, bool over, string id) => __builder =>
+    {
+        <div class="form-check mt-2"><input class="form-check-input" type="checkbox" id="@(id)fill" checked="@fill" @onchange="e => setFill((bool)e.Value!)" /><label class="form-check-label" for="@(id)fill">Fill empty fields only</label></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="@(id)over" checked="@over" @onchange="e => setOver((bool)e.Value!)" /><label class="form-check-label" for="@(id)over">Overwrite existing values</label></div>
+    };
+
+    private async Task CopyMachines()
+    {
+        Clear();
+        if (_srcMachine == 0 || _tgtMachines.Count == 0) { _error = "Select a source and at least one target machine."; return; }
+        var r = await BulkSvc.CopyMachineToMachinesAsync(new() { SourceMachineId = _srcMachine, TargetMachineIds = _tgtMachines, FillEmptyOnly = _mFill, Overwrite = _mOver });
+        if (!r.Succeeded) { _error = r.Error; return; }
+        _message = $"Created {r.Value!.CreatedCredentials}, updated {r.Value.AffectedCredentials} credential(s).";
+    }
+
+    private async Task CopyClients()
+    {
+        Clear();
+        if (_srcClient == 0 || _tgtClients.Count == 0) { _error = "Select a source and at least one target client."; return; }
+        var r = await BulkSvc.CopyClientToClientsAsync(new() { SourceClientId = _srcClient, TargetClientIds = _tgtClients, FillEmptyOnly = _cFill, Overwrite = _cOver });
+        if (!r.Succeeded) { _error = r.Error; return; }
+        _message = $"Created {r.Value!.CreatedCredentials}, updated {r.Value.AffectedCredentials} credential(s).";
+    }
+
+    private void Clear() { _message = null; _error = null; }
+}

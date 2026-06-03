@@ -1,0 +1,135 @@
+@page "/request-access"
+@attribute [Authorize(Policy = "perm:credentials.request")]
+@rendermode InteractiveServer
+@inject SecureAccess.Application.Features.AccessRequests.IAccessRequestService AccessRequests
+@inject SecureAccess.Application.Features.Machines.IMachineService Machines
+@inject SecureAccess.Application.Features.Clients.IClientService Clients
+
+<PageTitle>Request Credentials - Secure Access</PageTitle>
+
+<h1>Request Credentials</h1>
+<p class="text-muted">Credentials are only revealed after a reason and internal ticket are recorded.</p>
+
+<div class="card mb-3">
+    <div class="card-body">
+        @if (!string.IsNullOrEmpty(_error)) { <div class="alert alert-danger py-2">@_error</div> }
+        <div class="row g-2">
+            <div class="col-md-4"><label class="form-label">Client</label>
+                <select class="form-select" @bind="_clientId" @bind:after="OnClientChanged">
+                    <option value="0">-- select client --</option>
+                    @foreach (var c in _clients) { <option value="@c.Id">@c.Name</option> }
+                </select>
+            </div>
+            <div class="col-md-4"><label class="form-label">Machine *</label>
+                <select class="form-select" @bind="_request.MachineId">
+                    <option value="0">-- select machine --</option>
+                    @foreach (var m in _machines) { <option value="@m.Id">@m.Name</option> }
+                </select>
+            </div>
+            <div class="col-md-4"><label class="form-label">Reason Category</label>
+                <select class="form-select" @bind="_request.ReasonCategory">
+                    @foreach (var r in Enum.GetValues<AccessReasonCategory>()) { <option value="@r">@r</option> }
+                </select>
+            </div>
+            <div class="col-md-12"><label class="form-label">Reason *</label>
+                <input class="form-control" @bind="_request.Reason" placeholder="e.g. Software update" />
+            </div>
+            <div class="col-md-6"><label class="form-label">Internal Ticket *</label>
+                <input class="form-control" @bind="_request.InternalTicket" placeholder="e.g. SAT-2026-00482" />
+            </div>
+            <div class="col-md-6"><label class="form-label">Customer Reference (optional)</label>
+                <input class="form-control" @bind="_request.CustomerTicket" placeholder="e.g. INC-ALZIRA-2045" />
+            </div>
+        </div>
+        <div class="mt-3">
+            <button class="btn btn-primary" @onclick="Submit" disabled="@_busy">Reveal Credentials</button>
+        </div>
+    </div>
+</div>
+
+@if (_result is not null)
+{
+    <h4>Credentials for @_result.MachineName <small class="text-muted">(@_result.ClientName)</small></h4>
+    @if (_result.Credentials.Count == 0)
+    {
+        <div class="alert alert-warning">No credentials are available for this machine.</div>
+    }
+    @foreach (var cred in _result.Credentials)
+    {
+        <div class="card mb-2">
+            <div class="card-header d-flex justify-content-between">
+                <span><strong>@cred.Label</strong> <span class="badge bg-secondary">@cred.CredentialTypeName</span></span>
+                <span class="badge bg-info">@cred.Scope</span>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm mb-0">
+                    @foreach (var f in cred.Fields)
+                    {
+                        <tr>
+                            <th style="width:30%">@f.Label</th>
+                            <td>
+                                @if (f.IsSecret)
+                                {
+                                    <code>@(IsShown(cred.Id, f.Key) ? f.Value : "••••••••")</code>
+                                    <button class="btn btn-sm btn-link" @onclick="() => Toggle(cred.Id, f.Key)">@(IsShown(cred.Id, f.Key) ? "Hide" : "Show")</button>
+                                }
+                                else { <span>@f.Value</span> }
+                            </td>
+                        </tr>
+                    }
+                </table>
+                @if (!string.IsNullOrEmpty(cred.Notes)) { <div class="text-muted small mt-2">@cred.Notes</div> }
+            </div>
+        </div>
+    }
+}
+
+@code {
+    [SupplyParameterFromQuery] public int? MachineId { get; set; }
+
+    private List<SecureAccess.Application.Features.Clients.ClientDto> _clients = new();
+    private List<SecureAccess.Application.Features.Machines.MachineDto> _machines = new();
+    private int _clientId;
+    private SecureAccess.Application.Features.AccessRequests.CredentialAccessRequest _request = new();
+    private SecureAccess.Application.Features.AccessRequests.AccessRequestResult? _result;
+    private readonly HashSet<string> _shown = new();
+    private string? _error;
+    private bool _busy;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _clients = (await Clients.GetClientsAsync(null, 1, 500)).Items.ToList();
+        if (MachineId is { } mid)
+        {
+            _request.MachineId = mid;
+            var m = await Machines.GetMachineAsync(mid);
+            if (m is not null) { _clientId = m.ClientId; await OnClientChanged(); _request.MachineId = mid; }
+        }
+    }
+
+    private async Task OnClientChanged()
+    {
+        _machines = _clientId == 0 ? new() : (await Machines.GetMachinesAsync(_clientId, null, 1, 500)).Items.ToList();
+    }
+
+    private async Task Submit()
+    {
+        _error = null; _result = null; _busy = true;
+        try
+        {
+            if (_request.MachineId == 0) { _error = "Please select a machine."; return; }
+            var result = await AccessRequests.RequestCredentialsAsync(_request);
+            if (!result.Succeeded) { _error = result.Error; return; }
+            _result = result.Value;
+            _shown.Clear();
+        }
+        finally { _busy = false; }
+    }
+
+    private bool IsShown(int credId, string key) => _shown.Contains($"{credId}:{key}");
+    private void Toggle(int credId, string key)
+    {
+        var k = $"{credId}:{key}";
+        if (!_shown.Add(k)) _shown.Remove(k);
+    }
+}

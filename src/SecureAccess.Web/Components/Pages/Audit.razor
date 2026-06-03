@@ -1,0 +1,73 @@
+@page "/audit"
+@attribute [Authorize(Policy = "perm:audit.view")]
+@rendermode InteractiveServer
+@inject SecureAccess.Application.Features.Audit.IAuditQueryService AuditSvc
+
+<PageTitle>Audit Logs - Secure Access</PageTitle>
+
+<h1>Audit Logs</h1>
+
+<div class="row g-2 mb-3 align-items-end">
+    <div class="col-md-3"><label class="form-label">From</label><input type="date" class="form-control" @bind="_from" /></div>
+    <div class="col-md-3"><label class="form-label">To</label><input type="date" class="form-control" @bind="_to" /></div>
+    <div class="col-md-3"><label class="form-label">Action</label>
+        <select class="form-select" @bind="_action">
+            <option value="">All</option>
+            @foreach (var a in Enum.GetValues<SecureAccess.Domain.Enums.AuditAction>()) { <option value="@a">@a</option> }
+        </select>
+    </div>
+    <div class="col-md-3"><button class="btn btn-primary" @onclick="() => Load(1)">Filter</button></div>
+</div>
+
+<table class="table table-sm table-striped">
+    <thead><tr><th>Date</th><th>User</th><th>Action</th><th>Result</th><th>Client</th><th>Machine</th><th>Type</th><th>Reason</th><th>Ticket</th><th>IP</th></tr></thead>
+    <tbody>
+        @foreach (var a in _page.Items)
+        {
+            <tr>
+                <td>@a.TimestampUtc.ToLocalTime().ToString("g")</td>
+                <td>@a.UserName</td>
+                <td>@a.Action</td>
+                <td><span class="badge @(a.Result == SecureAccess.Domain.Enums.AuditResult.Success ? "bg-success" : "bg-danger")">@a.Result</span></td>
+                <td>@a.ClientName</td>
+                <td>@a.MachineName</td>
+                <td>@a.CredentialType</td>
+                <td>@a.Reason</td>
+                <td>@a.InternalTicket</td>
+                <td>@a.IpAddress</td>
+            </tr>
+        }
+        @if (_page.Items.Count == 0) { <tr><td colspan="10" class="text-muted">No records.</td></tr> }
+    </tbody>
+</table>
+
+<nav>
+    <ul class="pagination">
+        <li class="page-item @(_page.Page <= 1 ? "disabled" : "")"><button class="page-link" @onclick="() => Load(_page.Page - 1)">Prev</button></li>
+        <li class="page-item disabled"><span class="page-link">@_page.Page / @Math.Max(1, _page.TotalPages)</span></li>
+        <li class="page-item @(_page.Page >= _page.TotalPages ? "disabled" : "")"><button class="page-link" @onclick="() => Load(_page.Page + 1)">Next</button></li>
+    </ul>
+</nav>
+
+@code {
+    private DateTime? _from = DateTime.Today.AddDays(-7);
+    private DateTime? _to = DateTime.Today;
+    private string _action = "";
+    private PagedResult<SecureAccess.Application.Features.Audit.AuditLogDto> _page = new();
+
+    protected override async Task OnInitializedAsync() => await Load(1);
+
+    private async Task Load(int page)
+    {
+        if (page < 1) return;
+        SecureAccess.Domain.Enums.AuditAction? action = Enum.TryParse<SecureAccess.Domain.Enums.AuditAction>(_action, out var a) ? a : null;
+        _page = await AuditSvc.QueryAsync(new()
+        {
+            FromUtc = _from?.ToUniversalTime(),
+            ToUtc = _to?.AddDays(1).ToUniversalTime(),
+            Action = action,
+            Page = page,
+            PageSize = 50
+        });
+    }
+}

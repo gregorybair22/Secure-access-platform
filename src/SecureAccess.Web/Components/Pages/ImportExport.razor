@@ -1,0 +1,75 @@
+@page "/import-export"
+@attribute [Authorize(Policy = "perm:data.export")]
+@rendermode InteractiveServer
+@inject SecureAccess.Application.Features.ImportExport.IImportService Import
+@inject ICurrentUserService Current
+
+<PageTitle>Import / Export - Secure Access</PageTitle>
+
+<h1>Import / Export</h1>
+
+<div class="card mb-3">
+    <div class="card-header">Export</div>
+    <div class="card-body">
+        <p>Download data as Excel, CSV or PDF.</p>
+        <div class="mb-2">
+            <strong>Clients:</strong>
+            <a class="btn btn-sm btn-outline-primary" href="/download/clients?format=Xlsx">Excel</a>
+            <a class="btn btn-sm btn-outline-primary" href="/download/clients?format=Csv">CSV</a>
+            <a class="btn btn-sm btn-outline-primary" href="/download/clients?format=Pdf">PDF</a>
+        </div>
+        <div>
+            <strong>Machines:</strong>
+            <a class="btn btn-sm btn-outline-primary" href="/download/machines?format=Xlsx">Excel</a>
+            <a class="btn btn-sm btn-outline-primary" href="/download/machines?format=Csv">CSV</a>
+            <a class="btn btn-sm btn-outline-primary" href="/download/machines?format=Pdf">PDF</a>
+        </div>
+    </div>
+</div>
+
+@if (Current.HasPermission(Permissions.ImportData))
+{
+    <div class="card">
+        <div class="card-header">Import (.xlsx / .csv)</div>
+        <div class="card-body">
+            @if (!string.IsNullOrEmpty(_message)) { <div class="alert alert-success">@_message</div> }
+            @if (!string.IsNullOrEmpty(_error)) { <div class="alert alert-danger">@_error</div> }
+            <div class="row g-2 align-items-end">
+                <div class="col-md-4"><label class="form-label">Entity</label>
+                    <select class="form-select" @bind="_entity">
+                        <option value="Clients">Clients</option>
+                        <option value="Machines">Machines</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">File</label>
+                    <InputFile class="form-control" OnChange="OnFile" accept=".xlsx,.csv" />
+                </div>
+            </div>
+            <p class="text-muted small mt-2">
+                Clients: columns Customer Code, Name, Contact, Phone, Email, Address.<br />
+                Machines: columns Customer Code, Machine, Serial Number, Model, Location.
+            </p>
+        </div>
+    </div>
+}
+
+@code {
+    private string _entity = "Clients";
+    private string? _message, _error;
+
+    private async Task OnFile(InputFileChangeEventArgs e)
+    {
+        _message = null; _error = null;
+        var file = e.File;
+        if (file is null) return;
+        var entity = Enum.Parse<SecureAccess.Application.Features.ImportExport.ImportEntity>(_entity);
+
+        await using var ms = new MemoryStream();
+        await file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).CopyToAsync(ms);
+        ms.Position = 0;
+        var result = await Import.ImportAsync(entity, ms, file.Name);
+        if (!result.Succeeded) { _error = result.Error; return; }
+        _message = $"Imported: {result.Value!.Created} created, {result.Value.Updated} updated, {result.Value.Skipped} skipped.";
+    }
+}

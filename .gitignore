@@ -1,0 +1,10 @@
+src/SecureAccess.Api/bin
+src/SecureAccess.Api/obj
+src/SecureAccess.Web/bin
+src/SecureAccess.Web/obj
+src/SecureAccess.Infrastructure/bin
+src/SecureAccess.Infrastructure/obj
+src/SecureAccess.Domain/bin
+src/SecureAccess.Domain/obj
+src/SecureAccess.Application/bin
+src/SecureAccess.Application/obj

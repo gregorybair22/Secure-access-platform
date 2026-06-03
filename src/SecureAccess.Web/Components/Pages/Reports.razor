@@ -1,0 +1,101 @@
+@page "/reports"
+@attribute [Authorize(Policy = "perm:reports.view")]
+@rendermode InteractiveServer
+@inject SecureAccess.Application.Features.Reports.IReportService ReportSvc
+
+<PageTitle>Reports - Secure Access</PageTitle>
+
+<h1>Reports</h1>
+
+<div class="row g-2 mb-3 align-items-end">
+    <div class="col-md-3"><label class="form-label">Report</label>
+        <select class="form-select" @bind="_report">
+            <option value="credential-access">Credential Access</option>
+            <option value="technician-activity">Technician Activity</option>
+            <option value="customer-access">Customer Access</option>
+            <option value="machine-access">Machine Access</option>
+            <option value="credential-usage">Credential Usage</option>
+            <option value="reason-analysis">Reason Analysis</option>
+            <option value="change-history">Change History</option>
+        </select>
+    </div>
+    <div class="col-md-3"><label class="form-label">From</label><input type="date" class="form-control" @bind="_from" /></div>
+    <div class="col-md-3"><label class="form-label">To</label><input type="date" class="form-control" @bind="_to" /></div>
+    <div class="col-md-3"><button class="btn btn-primary" @onclick="Run">Run Report</button></div>
+</div>
+
+@if (_headers is not null)
+{
+    <table class="table table-sm table-striped">
+        <thead><tr>@foreach (var h in _headers) { <th>@h</th> }</tr></thead>
+        <tbody>
+            @foreach (var row in _rows)
+            {
+                <tr>@foreach (var cell in row) { <td>@cell</td> }</tr>
+            }
+            @if (_rows.Count == 0) { <tr><td colspan="@_headers.Count" class="text-muted">No data for the selected range.</td></tr> }
+        </tbody>
+    </table>
+}
+
+@code {
+    private string _report = "credential-access";
+    private DateTime? _from = DateTime.Today.AddMonths(-1);
+    private DateTime? _to = DateTime.Today;
+    private List<string>? _headers;
+    private List<List<string>> _rows = new();
+
+    private SecureAccess.Application.Features.Reports.ReportFilter Filter() => new()
+    {
+        FromUtc = _from?.ToUniversalTime(),
+        ToUtc = _to?.AddDays(1).ToUniversalTime()
+    };
+
+    private async Task Run()
+    {
+        _rows = new();
+        var f = Filter();
+        switch (_report)
+        {
+            case "credential-access":
+                _headers = new() { "Date", "User", "Client", "Machine", "Type", "Reason", "Ticket", "IP" };
+                foreach (var r in await ReportSvc.CredentialAccessAsync(f))
+                    _rows.Add(new() { L(r.TimestampUtc), r.UserName, r.ClientName ?? "", r.MachineName ?? "", r.CredentialType ?? "", r.Reason ?? "", r.InternalTicket ?? "", r.IpAddress ?? "" });
+                break;
+            case "technician-activity":
+                _headers = new() { "Technician", "Accesses", "Clients", "Machines", "Last Access" };
+                foreach (var r in await ReportSvc.TechnicianActivityAsync(f))
+                    _rows.Add(new() { r.UserName, r.AccessCount.ToString(), r.DistinctClients.ToString(), r.DistinctMachines.ToString(), L(r.LastAccessUtc) });
+                break;
+            case "customer-access":
+                _headers = new() { "Client", "User", "Reason", "Date", "Type" };
+                foreach (var r in await ReportSvc.CustomerAccessAsync(f))
+                    _rows.Add(new() { r.ClientName, r.UserName, r.Reason ?? "", L(r.TimestampUtc), r.CredentialType ?? "" });
+                break;
+            case "machine-access":
+                _headers = new() { "Machine", "Client", "Interventions", "Last Access", "Last Technician" };
+                foreach (var r in await ReportSvc.MachineAccessAsync(f))
+                    _rows.Add(new() { r.MachineName, r.ClientName, r.Interventions.ToString(), L(r.LastAccessUtc), r.LastTechnician ?? "" });
+                break;
+            case "credential-usage":
+                _headers = new() { "Category", "Name", "Count" };
+                var usage = await ReportSvc.CredentialUsageAsync(f);
+                foreach (var r in usage.MostAccessedCredentialTypes) _rows.Add(new() { "Credential Type", r.Name, r.Count.ToString() });
+                foreach (var r in usage.MostAccessedCustomers) _rows.Add(new() { "Customer", r.Name, r.Count.ToString() });
+                foreach (var r in usage.MostAccessedMachines) _rows.Add(new() { "Machine", r.Name, r.Count.ToString() });
+                break;
+            case "reason-analysis":
+                _headers = new() { "Reason Category", "Count" };
+                foreach (var r in await ReportSvc.ReasonAnalysisAsync(f))
+                    _rows.Add(new() { r.CategoryName, r.Count.ToString() });
+                break;
+            case "change-history":
+                _headers = new() { "Date", "Entity", "Field", "Previous", "New", "By", "Reason" };
+                foreach (var r in await ReportSvc.ChangeHistoryAsync(f))
+                    _rows.Add(new() { L(r.ModifiedAtUtc), $"{r.EntityType}#{r.EntityId}", r.FieldName, r.PreviousValue ?? "", r.NewValue ?? "", r.ModifiedBy ?? "", r.Reason ?? "" });
+                break;
+        }
+    }
+
+    private static string L(DateTime? d) => d?.ToLocalTime().ToString("g") ?? "";
+}
