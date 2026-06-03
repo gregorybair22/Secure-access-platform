@@ -48,6 +48,7 @@ public interface IUserService
     Task<UserDto?> GetUserAsync(int id, CancellationToken ct = default);
     Task<Result<int>> CreateUserAsync(CreateUserRequest request, CancellationToken ct = default);
     Task<Result> UpdateUserAsync(int id, UpdateUserRequest request, CancellationToken ct = default);
+    Task<Result> DeleteUserAsync(int id, int? currentUserId, CancellationToken ct = default);
     Task<IReadOnlyList<RoleDto>> GetRolesAsync(CancellationToken ct = default);
     Task<Result> UpdateRolePermissionsAsync(int roleId, List<string> permissionCodes, CancellationToken ct = default);
     Task<IReadOnlyList<string>> GetAllPermissionCodesAsync(CancellationToken ct = default);

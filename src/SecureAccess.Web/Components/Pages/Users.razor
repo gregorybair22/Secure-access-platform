@@ -2,59 +2,246 @@
 @attribute [Authorize(Policy = "perm:users.manage")]
 @rendermode InteractiveServer
 @inject SecureAccess.Application.Features.Users.IUserService UserSvc
+@inject ICurrentUserService Current
 
 <PageTitle>Users - Secure Access</PageTitle>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Users</h1>
-    <button class="btn btn-primary" @onclick="StartNew">New User</button>
+<div class="users-page">
+    @if (!string.IsNullOrEmpty(_error) && _editing is null)
+    {
+        <div class="users-page-alert" role="alert">@_error</div>
+    }
+
+    <header class="users-page-header">
+        <div>
+            <h1>Users</h1>
+            <p class="users-page-subtitle">Manage system users and their access.</p>
+        </div>
+        <button type="button" class="users-btn-primary" @onclick="StartNew">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            New User
+        </button>
+    </header>
+
+    <div class="users-card">
+        <div class="users-toolbar">
+            <div class="users-toolbar-search">
+                <svg class="users-toolbar-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="search" placeholder="Search users..." @bind="_search" @bind:event="oninput" @bind:after="ResetPage" />
+            </div>
+            <select @bind="_statusFilter" @bind:after="ResetPage">
+                <option value="">All Status</option>
+                @foreach (var s in Enum.GetValues<EntityStatus>())
+                {
+                    <option value="@s">@s</option>
+                }
+            </select>
+            <button type="button" class="users-btn-outline" title="Filters">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                </svg>
+                Filters
+            </button>
+        </div>
+
+        <div class="users-table-wrap">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th class="text-center"><button type="button" class="users-th-sort @SortClass("username")" @onclick='() => SortBy("username")'>Username @SortIcon</button></th>
+                        <th class="text-center"><button type="button" class="users-th-sort @SortClass("name")" @onclick='() => SortBy("name")'>Name @SortIcon</button></th>
+                        <th class="text-center"><button type="button" class="users-th-sort @SortClass("email")" @onclick='() => SortBy("email")'>Email @SortIcon</button></th>
+                        <th class="text-center"><button type="button" class="users-th-sort @SortClass("roles")" @onclick='() => SortBy("roles")'>Roles @SortIcon</button></th>
+                        <th class="text-center"><button type="button" class="users-th-sort @SortClass("status")" @onclick='() => SortBy("status")'>Status @SortIcon</button></th>
+                        <th class="text-center"><button type="button" class="users-th-sort @SortClass("lastlogin")" @onclick='() => SortBy("lastlogin")'>Last Login @SortIcon</button></th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (PagedItems.Count == 0)
+                    {
+                        <tr><td colspan="7" class="users-empty">No users found.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var u in PagedItems)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                            <span class="users-username-text">@u.UserName</span>
+                                </td>
+                                <td class="text-center">@u.FullName</td>
+                                <td class="text-center">@u.Email</td>
+                                <td class="text-center">
+                                    @foreach (var role in u.Roles)
+                                    {
+                                        <span class="users-role-badge">@role</span>
+                                    }
+                                    @if (u.Roles.Count == 0)
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td class="text-center"><span class="users-status-badge @StatusClass(u.Status)">@u.Status</span></td>
+                                <td class="text-center">@(u.LastLoginUtc?.ToLocalTime().ToString("MMM d, yyyy h:mm tt") ?? "—")</td>
+                                <td class="text-center">
+                                    <div class="users-actions">
+                                        <button type="button" class="users-btn-edit" @onclick="() => Edit(u)">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                            </svg>
+                                            Edit
+                                        </button>
+                                        <button type="button"
+                                                class="users-btn-delete"
+                                                disabled="@(Current.UserId == u.Id)"
+                                                title="@(Current.UserId == u.Id ? "You cannot delete your own account" : "Delete user")"
+                                                @onclick="() => OpenDeleteConfirm(u)">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                                <line x1="10" y1="11" x2="10" y2="17"/>
+                                                <line x1="14" y1="11" x2="14" y2="17"/>
+                                            </svg>
+                                            Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <footer class="users-footer">
+            <span>Showing @RangeStart to @RangeEnd of @FilteredCount users</span>
+            <div class="users-pagination">
+                <button type="button" disabled="@(_page <= 1)" @onclick="PrevPage" aria-label="Previous page">‹</button>
+                @for (var p = 1; p <= TotalPages; p++)
+                {
+                    var pageNum = p;
+                    <button type="button" class="@(_page == pageNum ? "active" : null)" @onclick="() => GoToPage(pageNum)">@pageNum</button>
+                }
+                <button type="button" disabled="@(_page >= TotalPages)" @onclick="NextPage" aria-label="Next page">›</button>
+            </div>
+        </footer>
+    </div>
 </div>
 
-@if (_editing is not null)
+@if (_deleteTarget is not null)
 {
-    <div class="card mb-3">
-        <div class="card-header">@(_editingId == 0 ? "New User" : "Edit User")</div>
-        <div class="card-body">
-            @if (!string.IsNullOrEmpty(_error)) { <div class="alert alert-danger py-2">@_error</div> }
-            <div class="row g-2">
-                <div class="col-md-4"><label class="form-label">Username *</label><input class="form-control" @bind="_userName" disabled="@(_editingId != 0)" /></div>
-                <div class="col-md-4"><label class="form-label">Full Name</label><input class="form-control" @bind="_fullName" /></div>
-                <div class="col-md-4"><label class="form-label">Email</label><input class="form-control" @bind="_email" /></div>
-                <div class="col-md-4"><label class="form-label">@(_editingId == 0 ? "Password *" : "Reset Password")</label><input class="form-control" type="text" @bind="_password" /></div>
-                <div class="col-md-4"><label class="form-label">Status</label>
-                    <select class="form-select" @bind="_status">@foreach (var s in Enum.GetValues<EntityStatus>()) { <option value="@s">@s</option> }</select>
+    <div class="users-modal-backdrop" @onclick="CloseDeleteModal">
+        <div class="users-modal users-modal-confirm" role="alertdialog" aria-modal="true" aria-labelledby="users-delete-title" @onclick:stopPropagation="true">
+            <div class="users-modal-header users-modal-header-danger">
+                <div class="users-delete-header-main">
+                    <div class="users-delete-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 id="users-delete-title">Delete user</h2>
+                        <p class="users-modal-subtitle">This action cannot be undone.</p>
+                    </div>
                 </div>
-                <div class="col-md-4"><label class="form-label">Roles</label>
-                    @foreach (var r in _roles)
-                    {
-                        <div class="form-check"><input class="form-check-input" type="checkbox" checked="@_selectedRoles.Contains(r.Id)" @onchange="e => ToggleRole(r.Id, (bool)e.Value!)" id="r@(r.Id)" /><label class="form-check-label" for="r@(r.Id)">@r.Name</label></div>
-                    }
-                </div>
+                <button type="button" class="users-modal-close" aria-label="Close" @onclick="CloseDeleteModal">×</button>
             </div>
-            <div class="mt-3">
-                <button class="btn btn-success" @onclick="Save">Save</button>
-                <button class="btn btn-secondary" @onclick="() => _editing = null">Cancel</button>
+            <div class="users-modal-body">
+                @if (!string.IsNullOrEmpty(_deleteError))
+                {
+                    <div class="users-modal-alert" role="alert">@_deleteError</div>
+                }
+                <p class="users-delete-message">
+                    Are you sure you want to delete
+                    <strong>@_deleteTarget.UserName</strong>?
+                    @if (!string.IsNullOrWhiteSpace(_deleteTarget.FullName))
+                    {
+                        <span class="users-delete-detail">(@_deleteTarget.FullName)</span>
+                    }
+                </p>
+            </div>
+            <div class="users-modal-footer">
+                <button type="button" class="users-btn-secondary" @onclick="CloseDeleteModal">Cancel</button>
+                <button type="button" class="users-btn-danger" @onclick="ConfirmDeleteAsync">Delete user</button>
             </div>
         </div>
     </div>
 }
 
-<table class="table table-striped">
-    <thead><tr><th>Username</th><th>Name</th><th>Email</th><th>Roles</th><th>Status</th><th>Last Login</th><th></th></tr></thead>
-    <tbody>
-        @foreach (var u in _items)
-        {
-            <tr>
-                <td>@u.UserName</td><td>@u.FullName</td><td>@u.Email</td>
-                <td>@string.Join(", ", u.Roles)</td><td>@u.Status</td>
-                <td>@(u.LastLoginUtc?.ToLocalTime().ToString("g") ?? "-")</td>
-                <td class="text-end"><button class="btn btn-sm btn-outline-primary" @onclick="() => Edit(u)">Edit</button></td>
-            </tr>
-        }
-    </tbody>
-</table>
+@if (_editing is not null)
+{
+    <div class="users-modal-backdrop" @onclick="CloseEditModal">
+        <div class="users-modal" role="dialog" aria-modal="true" aria-labelledby="users-modal-title" @onclick:stopPropagation="true">
+            <div class="users-modal-header">
+                <h2 id="users-modal-title">@(_editingId == 0 ? "New User" : "Edit User")</h2>
+                <button type="button" class="users-modal-close" aria-label="Close" @onclick="CloseEditModal">×</button>
+            </div>
+            <div class="users-modal-body">
+                @if (!string.IsNullOrEmpty(_error))
+                {
+                    <div class="users-modal-alert" role="alert">@_error</div>
+                }
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Username *</label>
+                        <input class="form-control" @bind="_userName" disabled="@(_editingId != 0)" autocomplete="off" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Full Name</label>
+                        <input class="form-control" @bind="_fullName" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input class="form-control" type="email" @bind="_email" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">@(_editingId == 0 ? "Password *" : "Reset Password")</label>
+                        <input class="form-control" type="password" @bind="_password" autocomplete="new-password" placeholder="@(_editingId == 0 ? "" : "Leave blank to keep")" />
+                    </div>
+                    @if (_editingId != 0)
+                    {
+                        <div class="col-md-6">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" @bind="_status">
+                                @foreach (var s in Enum.GetValues<EntityStatus>())
+                                {
+                                    <option value="@s">@s</option>
+                                }
+                            </select>
+                        </div>
+                    }
+                    <div class="col-12">
+                        <label class="form-label">Roles</label>
+                        <div class="users-modal-roles">
+                            @foreach (var r in _roles)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" checked="@_selectedRoles.Contains(r.Id)" @onchange="e => ToggleRole(r.Id, (bool)e.Value!)" id="role-@r.Id" />
+                                    <label class="form-check-label" for="role-@r.Id">@r.Name</label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="users-modal-footer">
+                <button type="button" class="users-btn-secondary" @onclick="CloseEditModal">Cancel</button>
+                <button type="button" class="users-btn-primary" @onclick="Save">Save</button>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
+    private const int PageSize = 10;
+
     private List<SecureAccess.Application.Features.Users.UserDto> _items = new();
     private List<SecureAccess.Application.Features.Users.RoleDto> _roles = new();
 
@@ -64,6 +251,58 @@
     private EntityStatus _status = EntityStatus.Active;
     private readonly HashSet<int> _selectedRoles = new();
     private string? _error;
+    private SecureAccess.Application.Features.Users.UserDto? _deleteTarget;
+    private string? _deleteError;
+
+    private string _search = "";
+    private string _statusFilter = "";
+    private string _sortColumn = "username";
+    private bool _sortAsc = true;
+    private int _page = 1;
+
+    private MarkupString SortIcon => new(
+        "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\">" +
+        "<path d=\"m7 15 5 5 5-5\"/><path d=\"m7 9 5-4 5 4\"/></svg>");
+
+    private IEnumerable<SecureAccess.Application.Features.Users.UserDto> FilteredItems
+    {
+        get
+        {
+            IEnumerable<SecureAccess.Application.Features.Users.UserDto> q = _items;
+
+            if (!string.IsNullOrWhiteSpace(_search))
+            {
+                var term = _search.Trim();
+                q = q.Where(u =>
+                    u.UserName.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                    u.FullName.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                    u.Email.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                    u.Roles.Any(r => r.Contains(term, StringComparison.OrdinalIgnoreCase)));
+            }
+
+            if (!string.IsNullOrEmpty(_statusFilter) && Enum.TryParse<EntityStatus>(_statusFilter, out var st))
+                q = q.Where(u => u.Status == st);
+
+            q = _sortColumn switch
+            {
+                "name" => _sortAsc ? q.OrderBy(u => u.FullName) : q.OrderByDescending(u => u.FullName),
+                "email" => _sortAsc ? q.OrderBy(u => u.Email) : q.OrderByDescending(u => u.Email),
+                "roles" => _sortAsc ? q.OrderBy(u => u.Roles.FirstOrDefault() ?? "") : q.OrderByDescending(u => u.Roles.FirstOrDefault() ?? ""),
+                "status" => _sortAsc ? q.OrderBy(u => u.Status) : q.OrderByDescending(u => u.Status),
+                "lastlogin" => _sortAsc ? q.OrderBy(u => u.LastLoginUtc) : q.OrderByDescending(u => u.LastLoginUtc),
+                _ => _sortAsc ? q.OrderBy(u => u.UserName) : q.OrderByDescending(u => u.UserName)
+            };
+
+            return q;
+        }
+    }
+
+    private int FilteredCount => FilteredItems.Count();
+    private int TotalPages => Math.Max(1, (int)Math.Ceiling(FilteredCount / (double)PageSize));
+    private List<SecureAccess.Application.Features.Users.UserDto> PagedItems =>
+        FilteredItems.Skip((_page - 1) * PageSize).Take(PageSize).ToList();
+    private int RangeStart => FilteredCount == 0 ? 0 : (_page - 1) * PageSize + 1;
+    private int RangeEnd => Math.Min(_page * PageSize, FilteredCount);
 
     protected override async Task OnInitializedAsync()
     {
@@ -71,33 +310,138 @@
         await Reload();
     }
 
-    private async Task Reload() => _items = (await UserSvc.GetUsersAsync()).ToList();
+    private async Task Reload()
+    {
+        _items = (await UserSvc.GetUsersAsync()).ToList();
+        if (_page > TotalPages) _page = TotalPages;
+    }
 
     private void StartNew()
     {
-        _editing = true; _editingId = 0; _error = null;
-        _userName = ""; _fullName = ""; _email = ""; _password = ""; _status = EntityStatus.Active;
+        _editing = true;
+        _editingId = 0;
+        _error = null;
+        _userName = "";
+        _fullName = "";
+        _email = "";
+        _password = "";
+        _status = EntityStatus.Active;
         _selectedRoles.Clear();
     }
 
     private void Edit(SecureAccess.Application.Features.Users.UserDto u)
     {
-        _editing = true; _editingId = u.Id; _error = null;
-        _userName = u.UserName; _fullName = u.FullName; _email = u.Email; _password = ""; _status = u.Status;
+        _editing = true;
+        _editingId = u.Id;
+        _error = null;
+        _userName = u.UserName;
+        _fullName = u.FullName;
+        _email = u.Email;
+        _password = "";
+        _status = u.Status;
         _selectedRoles.Clear();
-        foreach (var r in _roles.Where(r => u.Roles.Contains(r.Name))) _selectedRoles.Add(r.Id);
+        foreach (var r in _roles.Where(r => u.Roles.Contains(r.Name)))
+            _selectedRoles.Add(r.Id);
     }
 
-    private void ToggleRole(int id, bool on) { if (on) _selectedRoles.Add(id); else _selectedRoles.Remove(id); }
+    private void CloseEditModal() => _editing = null;
+
+    private void OpenDeleteConfirm(SecureAccess.Application.Features.Users.UserDto u)
+    {
+        _deleteTarget = u;
+        _deleteError = null;
+    }
+
+    private void CloseDeleteModal() => _deleteTarget = null;
+
+    private void ToggleRole(int id, bool on)
+    {
+        if (on) _selectedRoles.Add(id);
+        else _selectedRoles.Remove(id);
+    }
+
+    private void SortBy(string column)
+    {
+        if (_sortColumn == column)
+            _sortAsc = !_sortAsc;
+        else
+        {
+            _sortColumn = column;
+            _sortAsc = true;
+        }
+        _page = 1;
+    }
+
+    private string SortClass(string column) => _sortColumn == column ? "active" : "";
+
+    private static string AvatarInitial(SecureAccess.Application.Features.Users.UserDto u)
+    {
+        var source = string.IsNullOrWhiteSpace(u.FullName) ? u.UserName : u.FullName;
+        return string.IsNullOrEmpty(source) ? "?" : char.ToUpperInvariant(source[0]).ToString();
+    }
+
+    private static string StatusClass(EntityStatus status) => status switch
+    {
+        EntityStatus.Active => "users-status-active",
+        EntityStatus.Inactive => "users-status-inactive",
+        EntityStatus.Suspended => "users-status-suspended",
+        EntityStatus.Archived => "users-status-archived",
+        _ => "users-status-inactive"
+    };
+
+    private void ResetPage() => _page = 1;
+
+    private void PrevPage() { if (_page > 1) _page--; }
+    private void NextPage() { if (_page < TotalPages) _page++; }
+    private void GoToPage(int p) => _page = p;
+
+    private async Task ConfirmDeleteAsync()
+    {
+        if (_deleteTarget is null) return;
+
+        _deleteError = null;
+        var result = await UserSvc.DeleteUserAsync(_deleteTarget.Id, Current.UserId);
+        if (!result.Succeeded)
+        {
+            _deleteError = result.Error;
+            return;
+        }
+
+        if (_editingId == _deleteTarget.Id)
+            _editing = null;
+
+        _deleteTarget = null;
+        await Reload();
+    }
 
     private async Task Save()
     {
         Result result;
         if (_editingId == 0)
-            result = await UserSvc.CreateUserAsync(new() { UserName = _userName, FullName = _fullName, Email = _email, Password = _password, RoleIds = _selectedRoles.ToList() });
+            result = await UserSvc.CreateUserAsync(new()
+            {
+                UserName = _userName,
+                FullName = _fullName,
+                Email = _email,
+                Password = _password,
+                RoleIds = _selectedRoles.ToList()
+            });
         else
-            result = await UserSvc.UpdateUserAsync(_editingId, new() { FullName = _fullName, Email = _email, Status = _status, RoleIds = _selectedRoles.ToList(), NewPassword = string.IsNullOrWhiteSpace(_password) ? null : _password });
-        if (!result.Succeeded) { _error = result.Error; return; }
+            result = await UserSvc.UpdateUserAsync(_editingId, new()
+            {
+                FullName = _fullName,
+                Email = _email,
+                Status = _status,
+                RoleIds = _selectedRoles.ToList(),
+                NewPassword = string.IsNullOrWhiteSpace(_password) ? null : _password
+            });
+
+        if (!result.Succeeded)
+        {
+            _error = result.Error;
+            return;
+        }
+
         _editing = null;
         await Reload();
     }

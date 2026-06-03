@@ -101,6 +101,20 @@ public class UserService : IUserService
         return Result.Success();
     }
 
+    public async Task<Result> DeleteUserAsync(int id, int? currentUserId, CancellationToken ct = default)
+    {
+        if (currentUserId == id)
+            return Result.Fail("You cannot delete your own account.");
+
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id, ct);
+        if (user is null) return Result.Fail("User not found.");
+
+        _db.Users.Remove(user);
+        await _db.SaveChangesAsync(ct);
+        await _audit.LogAsync(new AuditEntry { Action = AuditAction.UserManagement, Details = $"Deleted user {user.UserName}" }, ct);
+        return Result.Success();
+    }
+
     public async Task<IReadOnlyList<RoleDto>> GetRolesAsync(CancellationToken ct = default)
     {
         return await _db.Roles.AsNoTracking()

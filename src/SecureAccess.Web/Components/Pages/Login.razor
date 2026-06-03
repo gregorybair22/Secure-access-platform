@@ -17,11 +17,6 @@
             <p>Credential Management Platform</p>
         </div>
 
-        @if (!string.IsNullOrEmpty(Error))
-        {
-            <div class="login-alert" role="alert">@Error</div>
-        }
-
         <form action="/account/login" method="post" id="login-form">
             <input type="hidden" name="returnUrl" value="@ReturnUrl" />
 
@@ -101,6 +96,9 @@
 </script>
 
 @code {
-    [SupplyParameterFromQuery] public string? Error { get; set; }
+    /// <summary>Legacy query param; errors are shown via toastr (toast-flash.js).</summary>
+    [SupplyParameterFromQuery(Name = "error")]
+    public string? Error { get; set; }
+
     [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
 }

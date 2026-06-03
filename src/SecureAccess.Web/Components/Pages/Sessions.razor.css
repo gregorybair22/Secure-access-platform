@@ -1,0 +1,325 @@
+.sessions-page {
+    max-width: 100%;
+}
+
+.sessions-page-header {
+    margin-bottom: 1.25rem;
+}
+
+.sessions-page-title-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+}
+
+.sessions-page-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    color: #2563eb;
+    background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%);
+    flex-shrink: 0;
+}
+
+.sessions-page-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.sessions-page-header h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--sa-text, #1e293b);
+}
+
+.sessions-page-subtitle {
+    margin: 0.25rem 0 0;
+    font-size: 0.9375rem;
+    color: var(--sa-text-muted, #64748b);
+}
+
+.sessions-card {
+    background: var(--sa-card-bg, #fff);
+    border: 1px solid var(--sa-border, #e2e8f0);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+}
+
+.sessions-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--sa-border, #e2e8f0);
+}
+
+.sessions-toolbar-search {
+    flex: 1;
+    min-width: 180px;
+    max-width: 280px;
+    position: relative;
+}
+
+.sessions-toolbar-search input {
+    width: 100%;
+    padding: 0.5rem 1rem 0.5rem 2.35rem;
+    border: 1px solid var(--sa-border, #e2e8f0);
+    border-radius: 8px;
+    font-size: 0.875rem;
+}
+
+.sessions-toolbar-search input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.sessions-toolbar-search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.sessions-date-range {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.sessions-date-input {
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--sa-border, #e2e8f0);
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    color: var(--sa-text, #1e293b);
+    background: #fff;
+    min-width: 130px;
+}
+
+.sessions-date-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.sessions-date-arrow {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.sessions-toolbar select {
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    border: 1px solid var(--sa-border, #e2e8f0);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    background: #fff;
+    color: var(--sa-text, #1e293b);
+}
+
+.sessions-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--sa-border, #e2e8f0);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--sa-text, #1e293b);
+    background: #fff;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.sessions-btn-outline:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.sessions-table-wrap {
+    overflow-x: auto;
+}
+
+.sessions-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+}
+
+.sessions-table thead th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--sa-text-muted, #64748b);
+    background: #f8fafc;
+    border-bottom: 1px solid var(--sa-border, #e2e8f0);
+    white-space: nowrap;
+}
+
+.sessions-th-num,
+.sessions-td-num {
+    text-align: center;
+}
+
+.sessions-th-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    font-weight: 600;
+    color: inherit;
+    cursor: pointer;
+}
+
+.sessions-th-sort svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0.45;
+}
+
+.sessions-th-sort.active svg {
+    opacity: 1;
+    color: #6366f1;
+}
+
+.sessions-table tbody td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--sa-border, #e2e8f0);
+    color: var(--sa-text, #1e293b);
+    vertical-align: middle;
+}
+
+.sessions-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.sessions-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.sessions-user-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.sessions-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #3b82f6 0%, #6366f1 100%);
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.sessions-username {
+    font-weight: 600;
+}
+
+.sessions-active-badge {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.sessions-active-yes {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.sessions-active-no {
+    color: #64748b;
+    background: #f1f5f9;
+}
+
+.sessions-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid var(--sa-border, #e2e8f0);
+    font-size: 0.8125rem;
+    color: var(--sa-text-muted, #64748b);
+}
+
+.sessions-pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.sessions-pagination button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 0.5rem;
+    border: 1px solid var(--sa-border, #e2e8f0);
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    background: #fff;
+    color: var(--sa-text, #1e293b);
+    cursor: pointer;
+}
+
+.sessions-pagination button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.sessions-pagination button.active {
+    background: #6366f1;
+    border-color: #6366f1;
+    color: #fff;
+}
+
+.sessions-empty {
+    padding: 2.5rem;
+    text-align: center;
+    color: var(--sa-text-muted, #64748b);
+}
+
+@media (max-width: 992px) {
+    .sessions-toolbar {
+        gap: 0.5rem;
+    }
+
+    .sessions-btn-outline {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .sessions-date-range {
+        width: 100%;
+    }
+
+    .sessions-date-input {
+        flex: 1;
+        min-width: 0;
+    }
+}

@@ -29,7 +29,10 @@ public static class AccountEndpoints
 
             var result = await auth.ValidateAndStartSessionAsync(new LoginRequest { UserName = userName, Password = password }, ip, ua);
             if (!result.Succeeded)
-                return Results.Redirect($"/login?error={Uri.EscapeDataString(result.Error ?? "Login failed")}");
+            {
+                var loginError = result.Error ?? "Login failed";
+                return Results.Redirect(ToastRedirect.WithToast("/login", "error", loginError));
+            }
 
             var u = result.Value!;
             var claims = new List<Claim>
@@ -46,15 +49,18 @@ public static class AccountEndpoints
                 new ClaimsPrincipal(identity),
                 new AuthenticationProperties { IsPersistent = rememberMe });
 
-            if (u.MustChangePassword) return Results.Redirect("/change-password");
-            return Results.Redirect(string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl);
+            var welcome = $"Welcome, {u.UserName}!";
+            if (u.MustChangePassword)
+                return Results.Redirect(ToastRedirect.WithToast("/change-password", "success", welcome));
+            var destination = string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl;
+            return Results.Redirect(ToastRedirect.WithToast(destination, "success", welcome));
         });
 
         app.MapPost("/account/logout", async (HttpContext http, IAuthService auth, ICurrentUserService current) =>
         {
             if (current.SessionId is { } sid) await auth.LogoutAsync(sid);
             await http.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return Results.Redirect("/login");
+            return Results.Redirect(ToastRedirect.WithToast("/login", "info", "You have been signed out."));
         });
     }
 }

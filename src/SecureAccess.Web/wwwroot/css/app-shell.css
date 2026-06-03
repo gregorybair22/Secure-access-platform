@@ -11,10 +11,15 @@
     --sa-text: #1e293b;
     --sa-text-muted: #64748b;
     --sa-border: #e2e8f0;
+    --sa-footer-bg: #1e293b;
+    --sa-footer-text: #94a3b8;
 }
 
 .page {
+    height: 100vh;
     min-height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
     background: var(--sa-content-bg);
 }
 
@@ -28,7 +33,11 @@
 main {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    flex: 1;
+    min-width: 0;
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
     background: var(--sa-content-bg);
 }
 
@@ -38,6 +47,7 @@ main {
     height: 4rem;
     padding: 0 1.5rem;
     gap: 1rem;
+    flex-shrink: 0;
 }
 
 .top-row-search {
@@ -203,16 +213,20 @@ main {
 }
 
 article.content {
-    flex: 1;
-    padding: 1.5rem 2rem 2rem !important;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1.5rem 2rem 1.5rem !important;
     background: var(--sa-content-bg);
 }
 
 .app-footer {
+    flex-shrink: 0;
     text-align: center;
-    padding: 1rem;
+    padding: 0.85rem 1rem;
     font-size: 0.8rem;
-    color: var(--sa-text-muted);
-    border-top: 1px solid var(--sa-border);
-    background: var(--sa-content-bg);
+    color: var(--sa-footer-text);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--sa-footer-bg);
 }

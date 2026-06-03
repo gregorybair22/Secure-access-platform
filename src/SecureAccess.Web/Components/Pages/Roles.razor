@@ -3,61 +3,289 @@
 @rendermode InteractiveServer
 @inject SecureAccess.Application.Features.Users.IUserService Users
 
-<PageTitle>Roles - Secure Access</PageTitle>
+<PageTitle>Roles &amp; Permissions - Secure Access</PageTitle>
 
-<h1>Roles &amp; Permissions</h1>
-@if (!string.IsNullOrEmpty(_message)) { <div class="alert alert-success">@_message</div> }
+<div class="roles-page">
+    @if (!string.IsNullOrEmpty(_message))
+    {
+        <div class="roles-page-alert" role="status">@_message</div>
+    }
 
-@foreach (var role in _roles)
-{
-    <div class="card mb-3">
-        <div class="card-header d-flex justify-content-between">
-            <strong>@role.Name</strong>
-            <button class="btn btn-sm btn-success" @onclick="() => Save(role)">Save</button>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                @foreach (var group in _allPermissions.GroupBy(p => p.Category))
-                {
-                    <div class="col-md-3 mb-2">
-                        <strong>@group.Key</strong>
-                        @foreach (var p in group)
-                        {
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox"
-                                       checked="@role.Permissions.Contains(p.Code)"
-                                       @onchange="e => Toggle(role, p.Code, (bool)e.Value!)"
-                                       id="@(role.Id)-@p.Code" />
-                                <label class="form-check-label small" for="@(role.Id)-@p.Code">@p.Name</label>
-                            </div>
-                        }
-                    </div>
-                }
+    <header class="roles-page-header">
+        <div class="roles-page-title-block">
+            <div class="roles-page-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+            <div>
+                <h1>Roles &amp; Permissions</h1>
+                <p class="roles-page-subtitle">Manage what each role can access and perform in the system.</p>
             </div>
         </div>
+        <button type="button" class="roles-btn-expand" @onclick="ToggleExpandAll">
+            @if (_allExpanded)
+            {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/>
+                    <line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/>
+                </svg>
+                <span>Collapse All</span>
+            }
+            else
+            {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+                    <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+                </svg>
+                <span>Expand All</span>
+            }
+        </button>
+    </header>
+
+    <div class="roles-list">
+        @foreach (var role in _roles)
+        {
+            var expanded = _expanded.Contains(role.Id);
+            <article class="roles-card @(expanded ? "expanded" : "")">
+                <div class="roles-card-header" @onclick="() => ToggleExpand(role.Id)">
+                    <div class="roles-role-icon @RoleIconClass(role.Name)" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <div class="roles-card-title">
+                        <div class="roles-card-title-row">
+                            <h2>@role.Name</h2>
+                            <span class="roles-badge @AccessBadgeClass(role.Name)">@AccessBadge(role.Name)</span>
+                        </div>
+                        <p class="roles-card-desc">@RoleDescription(role)</p>
+                    </div>
+                    <div class="roles-card-actions">
+                        <button type="button"
+                                class="roles-btn-save @SaveButtonClass(role.Name)"
+                                @onclick:stopPropagation="true"
+                                @onclick="() => Save(role)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+                            </svg>
+                            Save Changes
+                        </button>
+                        <button type="button"
+                                class="roles-btn-chevron"
+                                aria-label="@(expanded ? "Collapse" : "Expand")"
+                                aria-expanded="@expanded"
+                                @onclick:stopPropagation="true"
+                                @onclick="() => ToggleExpand(role.Id)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                @if (expanded)
+                {
+                    <div class="roles-card-body">
+                        <div class="roles-permissions-grid">
+                            @foreach (var group in PermissionGroups)
+                            {
+                                var items = group.Permissions;
+                                if (items.Count == 0) continue;
+
+                                <div class="roles-perm-category">
+                                    <div class="roles-category-head">
+                                        <span class="roles-category-icon" aria-hidden="true">@CategoryIcon(group.DisplayName)</span>
+                                        <span class="roles-category-label">@group.DisplayName</span>
+                                    </div>
+                                    <div class="roles-perm-list">
+                                        @foreach (var p in items)
+                                        {
+                                            var inputId = $"{role.Id}-{p.Code}";
+                                            <label class="roles-perm-item" for="@inputId">
+                                                <input type="checkbox"
+                                                       id="@inputId"
+                                                       checked="@role.Permissions.Contains(p.Code)"
+                                                       @onchange="e => Toggle(role, p.Code, (bool)e.Value!)" />
+                                                <span>@p.Label</span>
+                                            </label>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </article>
+        }
     </div>
-}
+</div>
 
 @code {
+    private static readonly string[] CategoryOrder =
+    [
+        "Clients", "Machines", "Credentials", "Templates", "Bulk",
+        "Administration", "Reporting", "Data", "Dashboard"
+    ];
+
     private List<SecureAccess.Application.Features.Users.RoleDto> _roles = new();
-    private List<(string Code, string Name, string Category)> _allPermissions = new();
+    private List<PermissionItem> _allPermissions = new();
+    private readonly HashSet<int> _expanded = new();
     private string? _message;
+
+    private bool _allExpanded => _roles.Count > 0 && _roles.All(r => _expanded.Contains(r.Id));
+
+    private IEnumerable<PermissionGroup> PermissionGroups =>
+        CategoryOrder.Select(cat =>
+        {
+            var display = cat == "Bulk" ? "Bulk Operations" : cat;
+            var perms = _allPermissions.Where(p => p.Category == cat).ToList();
+            return new PermissionGroup(display, perms);
+        });
 
     protected override async Task OnInitializedAsync()
     {
-        _roles = (await Users.GetRolesAsync()).ToList();
-        _allPermissions = Permissions.All.Select(kv => (kv.Key, kv.Value.Name, kv.Value.Category)).ToList();
+        _roles = (await Users.GetRolesAsync())
+            .OrderBy(r => r.Name switch
+            {
+                RoleNames.Administrator => 0,
+                RoleNames.Auditor => 1,
+                RoleNames.Technician => 2,
+                _ => 3
+            })
+            .ThenBy(r => r.Name)
+            .ToList();
+        _allPermissions = Permissions.All
+            .Select(kv => new PermissionItem(kv.Key, kv.Value.Name, kv.Value.Category, ShortLabel(kv.Key, kv.Value.Name)))
+            .ToList();
+
+        foreach (var role in _roles.Where(r => r.Name != RoleNames.Technician))
+            _expanded.Add(role.Id);
     }
 
     private void Toggle(SecureAccess.Application.Features.Users.RoleDto role, string code, bool on)
     {
-        if (on) { if (!role.Permissions.Contains(code)) role.Permissions.Add(code); }
-        else role.Permissions.Remove(code);
+        if (on)
+        {
+            if (!role.Permissions.Contains(code))
+                role.Permissions.Add(code);
+        }
+        else
+            role.Permissions.Remove(code);
+    }
+
+    private void ToggleExpand(int roleId)
+    {
+        if (!_expanded.Add(roleId))
+            _expanded.Remove(roleId);
+    }
+
+    private void ToggleExpandAll()
+    {
+        if (_allExpanded)
+            _expanded.Clear();
+        else
+        {
+            foreach (var role in _roles)
+                _expanded.Add(role.Id);
+        }
     }
 
     private async Task Save(SecureAccess.Application.Features.Users.RoleDto role)
     {
-        await Users.UpdateRolePermissionsAsync(role.Id, role.Permissions.ToList());
-        _message = $"Saved permissions for {role.Name}.";
+        var result = await Users.UpdateRolePermissionsAsync(role.Id, role.Permissions.ToList());
+        _message = result.Succeeded
+            ? $"Saved permissions for {role.Name}."
+            : result.Error ?? "Could not save permissions.";
     }
+
+    private static string AccessBadge(string roleName) => roleName switch
+    {
+        RoleNames.Administrator => "Full Access",
+        RoleNames.Auditor => "Read-Only",
+        _ => "Limited Access"
+    };
+
+    private static string AccessBadgeClass(string roleName) => roleName switch
+    {
+        RoleNames.Administrator => "roles-badge-full",
+        RoleNames.Auditor => "roles-badge-readonly",
+        _ => "roles-badge-limited"
+    };
+
+    private static string SaveButtonClass(string roleName) =>
+        roleName == RoleNames.Administrator ? "roles-btn-save-green" : "roles-btn-save-blue";
+
+    private static string RoleDescription(SecureAccess.Application.Features.Users.RoleDto role)
+    {
+        if (!string.IsNullOrWhiteSpace(role.Description))
+            return role.Description;
+
+        return role.Name switch
+        {
+            RoleNames.Administrator => "Has full access to all modules and features.",
+            RoleNames.Auditor => "Can view data and reports. Limited to read-only access.",
+            RoleNames.Technician => "Can manage assigned items and view limited reports.",
+            _ => "Custom role permissions."
+        };
+    }
+
+    private static string ShortLabel(string code, string fullName) => code switch
+    {
+        Permissions.ClientsView => "View Clients",
+        Permissions.ClientsCreate => "Create",
+        Permissions.ClientsEdit => "Edit",
+        Permissions.ClientsDelete => "Delete",
+        Permissions.MachinesView => "View Machines",
+        Permissions.MachinesCreate => "Create",
+        Permissions.MachinesEdit => "Edit",
+        Permissions.MachinesDelete => "Delete",
+        Permissions.CredentialsView => "View Credentials",
+        Permissions.CredentialsViewSecret => "View Secret Credential Values",
+        Permissions.CredentialsCreate => "Create",
+        Permissions.CredentialsEdit => "Edit",
+        Permissions.CredentialsDelete => "Delete",
+        Permissions.CredentialsRequest => "Request",
+        Permissions.TemplatesManage => "Manage Templates",
+        Permissions.BulkOperations => "Execute Bulk Operations",
+        Permissions.UsersManage => "Manage Users",
+        Permissions.RolesManage => "Manage Roles & Permissions",
+        Permissions.ReportsView => "View Reports",
+        Permissions.AuditView => "View Audit Logs",
+        Permissions.ImportData => "Import Data",
+        Permissions.ExportData => "Export Data",
+        Permissions.DashboardView => "View Dashboard",
+        _ => fullName
+    };
+
+    private static string RoleIconClass(string roleName) => roleName switch
+    {
+        RoleNames.Administrator => "roles-role-icon-admin",
+        RoleNames.Auditor => "roles-role-icon-auditor",
+        RoleNames.Technician => "roles-role-icon-technician",
+        _ => "roles-role-icon-default"
+    };
+
+    private static MarkupString CategoryIcon(string category) => category switch
+    {
+        "Clients" => CatIcon("<path d=\"M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M23 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/>"),
+        "Machines" => CatIcon("<rect x=\"2\" y=\"2\" width=\"20\" height=\"8\" rx=\"2\"/><rect x=\"2\" y=\"14\" width=\"20\" height=\"8\" rx=\"2\"/><line x1=\"6\" y1=\"6\" x2=\"6.01\" y2=\"6\"/><line x1=\"6\" y1=\"18\" x2=\"6.01\" y2=\"18\"/>"),
+        "Credentials" => CatIcon("<rect x=\"5\" y=\"11\" width=\"14\" height=\"10\" rx=\"2\"/><path d=\"M8 11V7a4 4 0 0 1 8 0v4\"/>"),
+        "Templates" => CatIcon("<rect x=\"9\" y=\"9\" width=\"13\" height=\"13\" rx=\"2\"/><path d=\"M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\"/>"),
+        "Bulk Operations" => CatIcon("<polygon points=\"12 2 2 7 12 12 22 7 12 2\"/><polyline points=\"2 17 12 22 22 17\"/><polyline points=\"2 12 12 17 22 12\"/>"),
+        "Administration" => CatIcon("<circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42\"/>"),
+        "Reporting" => CatIcon("<line x1=\"18\" y1=\"20\" x2=\"18\" y2=\"10\"/><line x1=\"12\" y1=\"20\" x2=\"12\" y2=\"4\"/><line x1=\"6\" y1=\"20\" x2=\"6\" y2=\"14\"/>"),
+        "Data" => CatIcon("<ellipse cx=\"12\" cy=\"5\" rx=\"9\" ry=\"3\"/><path d=\"M21 12c0 1.66-4 3-9 3s-9-1.34-9-3\"/><path d=\"M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5\"/>"),
+        _ => CatIcon("<rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/>")
+    };
+
+    private static MarkupString CatIcon(string inner) =>
+        new($"<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\">{inner}</svg>");
+
+    private sealed record PermissionItem(string Code, string Name, string Category, string Label);
+    private sealed record PermissionGroup(string DisplayName, List<PermissionItem> Permissions);
 }
