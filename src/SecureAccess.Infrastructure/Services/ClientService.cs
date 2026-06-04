@@ -21,16 +21,42 @@ public class ClientService : IClientService
         _current = current;
     }
 
+    private IQueryable<Client> VisibleClientsQuery()
+    {
+        var query = _db.Clients.AsNoTracking();
+        if (!_current.IsInRole(RoleNames.Administrator) && !_current.HasPermission(Permissions.AuditView))
+            query = query.Where(c => !c.IsRestricted);
+        return query;
+    }
+
+    public async Task<ClientListStats> GetListStatsAsync(CancellationToken ct = default)
+    {
+        var clients = VisibleClientsQuery();
+        var total = await clients.CountAsync(ct);
+        var active = await clients.CountAsync(c => c.Status == EntityStatus.Active, ct);
+        var machines = await clients.SelectMany(c => c.Machines).CountAsync(ct);
+        var activeCredentials = await (
+            from cr in _db.Credentials.AsNoTracking()
+            join c in clients on cr.ClientId equals c.Id
+            where cr.IsActive
+            select cr
+        ).CountAsync(ct);
+
+        return new ClientListStats
+        {
+            TotalClients = total,
+            ActiveClients = active,
+            TotalMachines = machines,
+            ActiveCredentials = activeCredentials
+        };
+    }
+
     public async Task<PagedResult<ClientDto>> GetClientsAsync(string? search, int page, int pageSize, CancellationToken ct = default)
     {
         page = Math.Max(1, page);
         pageSize = Math.Clamp(pageSize, 1, 200);
 
-        var query = _db.Clients.AsNoTracking().AsQueryable();
-
-        // Technicians cannot see restricted clients.
-        if (!_current.IsInRole(RoleNames.Administrator) && !_current.HasPermission(Permissions.AuditView))
-            query = query.Where(c => !c.IsRestricted);
+        var query = VisibleClientsQuery();
 
         if (!string.IsNullOrWhiteSpace(search))
         {

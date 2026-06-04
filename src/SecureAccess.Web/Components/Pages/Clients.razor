@@ -1,118 +1,509 @@
 @page "/clients"
 @attribute [Authorize(Policy = "perm:clients.view")]
 @rendermode InteractiveServer
-@inject SecureAccess.Application.Features.Clients.IClientService ClientSvc
+@using SecureAccess.Application.Features.Clients
+@using SecureAccess.Application.Common
+@inject IClientService ClientSvc
 @inject ICurrentUserService Current
 
 <PageTitle>Clients - Secure Access</PageTitle>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Clients</h1>
-    @if (Current.HasPermission(Permissions.ClientsCreate))
-    {
-        <button class="btn btn-primary" @onclick="() => Edit(new())">New Client</button>
-    }
-</div>
+<div class="clients-page">
+    <header class="clients-page-header">
+        <div class="clients-page-title-block">
+            <div class="clients-page-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+            <div>
+                <h1>Clients</h1>
+                <p class="clients-page-subtitle">Manage and monitor all your clients in one place.</p>
+            </div>
+        </div>
+        @if (Current.HasPermission(Permissions.ClientsCreate))
+        {
+            <button type="button" class="clients-btn-primary" @onclick="StartNew">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                New Client
+            </button>
+        }
+    </header>
 
-<div class="input-group mb-3" style="max-width:400px">
-    <input class="form-control" placeholder="Search name or code..." @bind="_search" @bind:event="oninput" @onkeyup="Reload" />
-</div>
+    <div class="clients-stats">
+        <article class="clients-stat-card">
+            <div class="clients-stat-icon clients-stat-icon-total" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+            <div>
+                <p class="clients-stat-label">Total Clients</p>
+                <p class="clients-stat-value">@_stats.TotalClients</p>
+                <p class="clients-stat-hint">All registered clients</p>
+            </div>
+        </article>
+        <article class="clients-stat-card">
+            <div class="clients-stat-icon clients-stat-icon-active" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+            </div>
+            <div>
+                <p class="clients-stat-label">Active Clients</p>
+                <p class="clients-stat-value">@_stats.ActiveClients</p>
+                <p class="clients-stat-hint">Currently active</p>
+            </div>
+        </article>
+        <article class="clients-stat-card">
+            <div class="clients-stat-icon clients-stat-icon-machines" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="8" rx="2"/>
+                    <rect x="2" y="14" width="20" height="8" rx="2"/>
+                    <line x1="6" y1="6" x2="6.01" y2="6"/>
+                    <line x1="6" y1="18" x2="6.01" y2="18"/>
+                </svg>
+            </div>
+            <div>
+                <p class="clients-stat-label">Total Machines</p>
+                <p class="clients-stat-value">@_stats.TotalMachines</p>
+                <p class="clients-stat-hint">Across all clients</p>
+            </div>
+        </article>
+        <article class="clients-stat-card">
+            <div class="clients-stat-icon clients-stat-icon-credentials" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <div>
+                <p class="clients-stat-label">Active Credentials</p>
+                <p class="clients-stat-value">@_stats.ActiveCredentials</p>
+                <p class="clients-stat-hint">In use by clients</p>
+            </div>
+        </article>
+    </div>
 
-@if (_editing is not null)
-{
-    <div class="card mb-3">
-        <div class="card-header">@(_editing.Id == 0 ? "New Client" : $"Edit: {_editing.Name}")</div>
-        <div class="card-body">
-            @if (!string.IsNullOrEmpty(_error)) { <div class="alert alert-danger py-2">@_error</div> }
-            <div class="row g-2">
-                <div class="col-md-6"><label class="form-label">Name *</label><input class="form-control" @bind="_form.Name" /></div>
-                <div class="col-md-6"><label class="form-label">Customer Code *</label><input class="form-control" @bind="_form.CustomerCode" /></div>
-                <div class="col-md-6"><label class="form-label">Contact Person</label><input class="form-control" @bind="_form.ContactPerson" /></div>
-                <div class="col-md-6"><label class="form-label">Phone</label><input class="form-control" @bind="_form.PhoneNumber" /></div>
-                <div class="col-md-6"><label class="form-label">Email</label><input class="form-control" @bind="_form.Email" /></div>
-                <div class="col-md-6"><label class="form-label">Status</label>
-                    <select class="form-select" @bind="_form.Status">
-                        @foreach (var s in Enum.GetValues<EntityStatus>()) { <option value="@s">@s</option> }
-                    </select>
+    <div class="clients-card">
+        <div class="clients-toolbar">
+            <div class="clients-toolbar-search">
+                <svg class="clients-toolbar-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="search" placeholder="Search by name or code..." @bind="_search" @bind:event="oninput" @bind:after="ResetPage" />
+            </div>
+            <select @bind="_statusFilter" @bind:after="ResetPage" aria-label="Filter by status">
+                <option value="">All Status</option>
+                @foreach (var s in Enum.GetValues<EntityStatus>())
+                {
+                    <option value="@s">@s</option>
+                }
+            </select>
+            <button type="button" class="clients-btn-outline" title="Filters">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                </svg>
+                Filter
+            </button>
+        </div>
+
+        @if (PagedItems.Count == 0)
+        {
+            <div class="clients-empty-state">
+                <div class="clients-empty-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                        <path d="M8 11h6"/>
+                    </svg>
                 </div>
-                <div class="col-12"><label class="form-label">Address</label><input class="form-control" @bind="_form.Address" /></div>
-                <div class="col-12"><label class="form-label">Notes</label><textarea class="form-control" @bind="_form.Notes"></textarea></div>
-                <div class="col-12 form-check ms-2">
-                    <input class="form-check-input" type="checkbox" @bind="_form.IsRestricted" id="restricted" />
-                    <label class="form-check-label" for="restricted">Restricted (hidden from technicians)</label>
+                <h2>No clients found</h2>
+                <p>Get started by adding your first client.</p>
+                @if (Current.HasPermission(Permissions.ClientsCreate))
+                {
+                    <button type="button" class="clients-btn-primary" @onclick="StartNew">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        New Client
+                    </button>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="clients-table-wrap">
+                <table class="clients-table">
+                    <thead>
+                        <tr>
+                            <th class="text-center"><button type="button" class="clients-th-sort @SortClass("code")" @onclick='() => SortBy("code")'>Code @SortIcon</button></th>
+                            <th class="text-center"><button type="button" class="clients-th-sort @SortClass("name")" @onclick='() => SortBy("name")'>Name @SortIcon</button></th>
+                            <th class="text-center"><button type="button" class="clients-th-sort @SortClass("contact")" @onclick='() => SortBy("contact")'>Contact @SortIcon</button></th>
+                            <th class="text-center clients-th-num"><button type="button" class="clients-th-sort @SortClass("machines")" @onclick='() => SortBy("machines")'>Machines @SortIcon</button></th>
+                            <th class="text-center"><button type="button" class="clients-th-sort @SortClass("status")" @onclick='() => SortBy("status")'>Status @SortIcon</button></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in PagedItems)
+                        {
+                            <tr class="@(CanEdit ? "clients-row-clickable" : null)" @onclick="() => OnRowClick(c)">
+                                <td class="text-center"><span class="clients-code">@c.CustomerCode</span></td>
+                                <td class="text-center">
+                                    <span class="clients-name">
+                                        @c.Name
+                                        @if (c.IsRestricted)
+                                        {
+                                            <span class="clients-restricted" title="Restricted">🔒</span>
+                                        }
+                                    </span>
+                                </td>
+                                <td class="text-center">@(string.IsNullOrWhiteSpace(c.ContactPerson) ? "—" : c.ContactPerson)</td>
+                                <td class="text-center clients-td-num">
+                                    <a href="/machines?clientId=@c.Id" @onclick:stopPropagation="true">@c.MachineCount</a>
+                                </td>
+                                <td class="text-center"><span class="clients-status-badge @StatusClass(c.Status)">@c.Status</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <footer class="clients-footer">
+            <span>Showing @RangeStart to @RangeEnd of @FilteredCount clients</span>
+            <div class="clients-footer-right">
+                <label class="clients-page-size">
+                    Rows per page:
+                    <select @bind="_pageSize" @bind:after="OnPageSizeChanged">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                </label>
+                <div class="clients-pagination">
+                    <button type="button" disabled="@(_page <= 1)" @onclick="FirstPage" aria-label="First page">«</button>
+                    <button type="button" disabled="@(_page <= 1)" @onclick="PrevPage" aria-label="Previous page">‹</button>
+                    @for (var p = 1; p <= TotalPages; p++)
+                    {
+                        var pageNum = p;
+                        <button type="button" class="@(_page == pageNum ? "active" : null)" @onclick="() => GoToPage(pageNum)">@pageNum</button>
+                    }
+                    <button type="button" disabled="@(_page >= TotalPages)" @onclick="NextPage" aria-label="Next page">›</button>
+                    <button type="button" disabled="@(_page >= TotalPages)" @onclick="LastPage" aria-label="Last page">»</button>
                 </div>
             </div>
-            <div class="mt-3">
-                <button class="btn btn-success" @onclick="Save">Save</button>
-                <button class="btn btn-secondary" @onclick="() => _editing = null">Cancel</button>
+        </footer>
+    </div>
+</div>
+
+@if (_deleteTarget is not null)
+{
+    <div class="clients-modal-backdrop" @onclick="CloseDeleteModal">
+        <div class="clients-modal clients-modal-confirm" role="alertdialog" aria-modal="true" aria-labelledby="clients-delete-title" @onclick:stopPropagation="true">
+            <div class="clients-modal-header clients-modal-header-danger">
+                <div class="clients-delete-header-main">
+                    <div class="clients-delete-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 id="clients-delete-title">Delete client</h2>
+                        <p class="clients-modal-subtitle">This action cannot be undone.</p>
+                    </div>
+                </div>
+                <button type="button" class="clients-modal-close" aria-label="Close" @onclick="CloseDeleteModal">×</button>
+            </div>
+            <div class="clients-modal-body">
+                @if (!string.IsNullOrEmpty(_deleteError))
+                {
+                    <div class="clients-modal-alert" role="alert">@_deleteError</div>
+                }
+                <p class="clients-delete-message">
+                    Are you sure you want to delete <strong>@_deleteTarget.Name</strong> (@_deleteTarget.CustomerCode)?
+                </p>
+            </div>
+            <div class="clients-modal-footer">
+                <button type="button" class="clients-btn-secondary" @onclick="CloseDeleteModal">Cancel</button>
+                <button type="button" class="clients-btn-danger" @onclick="ConfirmDeleteAsync">Delete client</button>
             </div>
         </div>
     </div>
 }
 
-<table class="table table-striped table-hover">
-    <thead><tr><th>Code</th><th>Name</th><th>Contact</th><th>Machines</th><th>Status</th><th></th></tr></thead>
-    <tbody>
-        @foreach (var c in _items)
-        {
-            <tr>
-                <td>@c.CustomerCode</td>
-                <td>@c.Name @(c.IsRestricted ? "🔒" : "")</td>
-                <td>@c.ContactPerson</td>
-                <td><a href="/machines?clientId=@c.Id">@c.MachineCount</a></td>
-                <td>@c.Status</td>
-                <td class="text-end">
-                    @if (Current.HasPermission(Permissions.ClientsEdit))
-                    { <button class="btn btn-sm btn-outline-primary" @onclick="() => Edit(c)">Edit</button> }
-                    @if (Current.HasPermission(Permissions.ClientsDelete))
-                    { <button class="btn btn-sm btn-outline-danger ms-1" @onclick="() => Delete(c.Id)">Delete</button> }
-                </td>
-            </tr>
-        }
-        @if (_items.Count == 0) { <tr><td colspan="6" class="text-muted">No clients found.</td></tr> }
-    </tbody>
-</table>
+@if (_editing is not null)
+{
+    <div class="clients-modal-backdrop" @onclick="CloseEditModal">
+        <div class="clients-modal" role="dialog" aria-modal="true" aria-labelledby="clients-modal-title" @onclick:stopPropagation="true">
+            <div class="clients-modal-header">
+                <h2 id="clients-modal-title">@(_editingId == 0 ? "New Client" : "Edit Client")</h2>
+                <button type="button" class="clients-modal-close" aria-label="Close" @onclick="CloseEditModal">×</button>
+            </div>
+            <div class="clients-modal-body">
+                @if (!string.IsNullOrEmpty(_error))
+                {
+                    <div class="clients-modal-alert" role="alert">@_error</div>
+                }
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Name *</label>
+                        <input class="form-control" @bind="_form.Name" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Customer Code *</label>
+                        <input class="form-control" @bind="_form.CustomerCode" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Contact Person</label>
+                        <input class="form-control" @bind="_form.ContactPerson" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Phone</label>
+                        <input class="form-control" @bind="_form.PhoneNumber" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input class="form-control" type="email" @bind="_form.Email" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" @bind="_form.Status">
+                            @foreach (var s in Enum.GetValues<EntityStatus>())
+                            {
+                                <option value="@s">@s</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Address</label>
+                        <input class="form-control" @bind="_form.Address" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" rows="3" @bind="_form.Notes"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" @bind="_form.IsRestricted" id="client-restricted" />
+                            <label class="form-check-label" for="client-restricted">Restricted (hidden from technicians)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clients-modal-footer">
+                @if (_editingId != 0 && Current.HasPermission(Permissions.ClientsDelete))
+                {
+                    <button type="button" class="clients-btn-danger clients-modal-delete" @onclick="OpenDeleteFromEdit">Delete</button>
+                }
+                <div class="clients-modal-footer-actions">
+                    <button type="button" class="clients-btn-secondary" @onclick="CloseEditModal">Cancel</button>
+                    <button type="button" class="clients-btn-primary" @onclick="Save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
-    private List<SecureAccess.Application.Features.Clients.ClientDto> _items = new();
-    private string? _search;
-    private SecureAccess.Application.Features.Clients.ClientDto? _editing;
-    private SecureAccess.Application.Features.Clients.SaveClientRequest _form = new();
+    private List<ClientDto> _items = new();
+    private ClientListStats _stats = new();
+
+    private bool? _editing;
+    private int _editingId;
+    private SaveClientRequest _form = new();
     private string? _error;
+    private ClientDto? _deleteTarget;
+    private string? _deleteError;
+
+    private string _search = "";
+    private string _statusFilter = "";
+    private string _sortColumn = "name";
+    private bool _sortAsc = true;
+    private int _page = 1;
+    private int _pageSize = 10;
+
+    private bool CanEdit => Current.HasPermission(Permissions.ClientsEdit);
+
+    private MarkupString SortIcon => new(
+        "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\">" +
+        "<path d=\"m7 15 5 5 5-5\"/><path d=\"m7 9 5-4 5 4\"/></svg>");
+
+    private IEnumerable<ClientDto> FilteredItems
+    {
+        get
+        {
+            IEnumerable<ClientDto> q = _items;
+
+            if (!string.IsNullOrWhiteSpace(_search))
+            {
+                var term = _search.Trim();
+                q = q.Where(c =>
+                    c.Name.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                    c.CustomerCode.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                    (c.ContactPerson?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false));
+            }
+
+            if (!string.IsNullOrEmpty(_statusFilter) && Enum.TryParse<EntityStatus>(_statusFilter, out var st))
+                q = q.Where(c => c.Status == st);
+
+            q = _sortColumn switch
+            {
+                "code" => _sortAsc ? q.OrderBy(c => c.CustomerCode) : q.OrderByDescending(c => c.CustomerCode),
+                "contact" => _sortAsc ? q.OrderBy(c => c.ContactPerson) : q.OrderByDescending(c => c.ContactPerson),
+                "machines" => _sortAsc ? q.OrderBy(c => c.MachineCount) : q.OrderByDescending(c => c.MachineCount),
+                "status" => _sortAsc ? q.OrderBy(c => c.Status) : q.OrderByDescending(c => c.Status),
+                _ => _sortAsc ? q.OrderBy(c => c.Name) : q.OrderByDescending(c => c.Name)
+            };
+
+            return q;
+        }
+    }
+
+    private int FilteredCount => FilteredItems.Count();
+    private int TotalPages => Math.Max(1, (int)Math.Ceiling(FilteredCount / (double)_pageSize));
+    private List<ClientDto> PagedItems =>
+        FilteredItems.Skip((_page - 1) * _pageSize).Take(_pageSize).ToList();
+    private int RangeStart => FilteredCount == 0 ? 0 : (_page - 1) * _pageSize + 1;
+    private int RangeEnd => Math.Min(_page * _pageSize, FilteredCount);
 
     protected override async Task OnInitializedAsync() => await Reload();
 
     private async Task Reload()
     {
-        var page = await ClientSvc.GetClientsAsync(_search, 1, 100);
+        var page = await ClientSvc.GetClientsAsync(null, 1, 500);
         _items = page.Items.ToList();
+        _stats = await ClientSvc.GetListStatsAsync();
+        if (_page > TotalPages) _page = TotalPages;
     }
 
-    private void Edit(SecureAccess.Application.Features.Clients.ClientDto c)
+    private void StartNew()
     {
+        _editing = true;
+        _editingId = 0;
         _error = null;
-        _editing = c;
-        _form = new()
+        _form = new SaveClientRequest { Status = EntityStatus.Active };
+    }
+
+    private void Edit(ClientDto c)
+    {
+        _editing = true;
+        _editingId = c.Id;
+        _error = null;
+        _form = new SaveClientRequest
         {
-            Name = c.Name, CustomerCode = c.CustomerCode, Address = c.Address,
-            ContactPerson = c.ContactPerson, PhoneNumber = c.PhoneNumber, Email = c.Email,
-            Notes = c.Notes, Status = c.Status == 0 ? EntityStatus.Active : c.Status, IsRestricted = c.IsRestricted
+            Name = c.Name,
+            CustomerCode = c.CustomerCode,
+            Address = c.Address,
+            ContactPerson = c.ContactPerson,
+            PhoneNumber = c.PhoneNumber,
+            Email = c.Email,
+            Notes = c.Notes,
+            Status = c.Status == 0 ? EntityStatus.Active : c.Status,
+            IsRestricted = c.IsRestricted
         };
+    }
+
+    private void OnRowClick(ClientDto c)
+    {
+        if (CanEdit)
+            Edit(c);
+    }
+
+    private void CloseEditModal() => _editing = null;
+
+    private void OpenDeleteFromEdit()
+    {
+        if (_editingId == 0) return;
+        var target = _items.FirstOrDefault(c => c.Id == _editingId);
+        if (target is null) return;
+        _editing = null;
+        _deleteTarget = target;
+        _deleteError = null;
+    }
+
+    private void CloseDeleteModal() => _deleteTarget = null;
+
+    private void SortBy(string column)
+    {
+        if (_sortColumn == column)
+            _sortAsc = !_sortAsc;
+        else
+        {
+            _sortColumn = column;
+            _sortAsc = true;
+        }
+        _page = 1;
+    }
+
+    private string SortClass(string column) => _sortColumn == column ? "active" : "";
+
+    private static string StatusClass(EntityStatus status) => status switch
+    {
+        EntityStatus.Active => "clients-status-active",
+        EntityStatus.Inactive => "clients-status-inactive",
+        EntityStatus.Suspended => "clients-status-suspended",
+        EntityStatus.Archived => "clients-status-archived",
+        _ => "clients-status-inactive"
+    };
+
+    private void ResetPage() => _page = 1;
+
+    private void OnPageSizeChanged()
+    {
+        _page = 1;
+        if (_page > TotalPages) _page = TotalPages;
+    }
+
+    private void FirstPage() => _page = 1;
+    private void PrevPage() { if (_page > 1) _page--; }
+    private void NextPage() { if (_page < TotalPages) _page++; }
+    private void LastPage() => _page = TotalPages;
+    private void GoToPage(int p) => _page = p;
+
+    private async Task ConfirmDeleteAsync()
+    {
+        if (_deleteTarget is null) return;
+
+        _deleteError = null;
+        var result = await ClientSvc.DeleteAsync(_deleteTarget.Id);
+        if (!result.Succeeded)
+        {
+            _deleteError = result.Error;
+            return;
+        }
+
+        if (_editingId == _deleteTarget.Id)
+            _editing = null;
+
+        _deleteTarget = null;
+        await Reload();
     }
 
     private async Task Save()
     {
-        var result = _editing!.Id == 0
-            ? (Result)await ClientSvc.CreateAsync(_form)
-            : await ClientSvc.UpdateAsync(_editing.Id, _form);
-        if (!result.Succeeded) { _error = result.Error; return; }
-        _editing = null;
-        await Reload();
-    }
+        Result result;
+        if (_editingId == 0)
+            result = await ClientSvc.CreateAsync(_form);
+        else
+            result = await ClientSvc.UpdateAsync(_editingId, _form);
 
-    private async Task Delete(int id)
-    {
-        await ClientSvc.DeleteAsync(id);
+        if (!result.Succeeded)
+        {
+            _error = result.Error;
+            return;
+        }
+
+        _editing = null;
         await Reload();
     }
 }

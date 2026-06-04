@@ -18,6 +18,14 @@ public class ClientDto
     public int MachineCount { get; set; }
 }
 
+public class ClientListStats
+{
+    public int TotalClients { get; set; }
+    public int ActiveClients { get; set; }
+    public int TotalMachines { get; set; }
+    public int ActiveCredentials { get; set; }
+}
+
 public class SaveClientRequest
 {
     public string Name { get; set; } = string.Empty;
@@ -33,6 +41,7 @@ public class SaveClientRequest
 
 public interface IClientService
 {
+    Task<ClientListStats> GetListStatsAsync(CancellationToken ct = default);
     Task<PagedResult<ClientDto>> GetClientsAsync(string? search, int page, int pageSize, CancellationToken ct = default);
     Task<ClientDto?> GetClientAsync(int id, CancellationToken ct = default);
     Task<Result<int>> CreateAsync(SaveClientRequest request, CancellationToken ct = default);

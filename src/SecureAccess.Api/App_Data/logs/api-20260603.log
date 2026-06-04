@@ -39,3 +39,7 @@
 2026-06-03 08:30:31.937 -07:00 [INF] Content root path: D:\La-Fabrica-de-Software\17 - Secure-access-platform\src\SecureAccess.Api
 2026-06-03 08:30:34.166 -07:00 [WRN] Failed to determine the https port for redirect.
 2026-06-03 08:30:34.176 -07:00 [INF] HTTP GET / responded 404 in 10.1340 ms
+2026-06-03 11:12:41.025 -07:00 [INF] Now listening on: http://localhost:5221
+2026-06-03 11:12:41.039 -07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-06-03 11:12:41.039 -07:00 [INF] Hosting environment: Development
+2026-06-03 11:12:41.039 -07:00 [INF] Content root path: D:\La-Fabrica-de-Software\17 - Secure-access-platform\src\SecureAccess.Api
