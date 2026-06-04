@@ -7,6 +7,7 @@ using SecureAccess.Infrastructure.Persistence;
 using SecureAccess.Infrastructure.Security;
 using SecureAccess.Web.Auth;
 using SecureAccess.Web.Components;
+using SecureAccess.Web.Services;
 using Serilog;
 
 SqlClientWindowsBootstrap.Initialize();
@@ -41,6 +42,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, ServerSideAuthStateProvider>();
+builder.Services.AddScoped<IToastService, ToastService>();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

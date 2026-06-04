@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using SecureAccess.Application.Features.Reports;
+using SecureAccess.Web.Services;
 
 namespace SecureAccess.Web.Components.Pages;
 
@@ -9,6 +10,7 @@ public partial class Reports
 {
     [Inject] private IReportService ReportSvc { get; set; } = default!;
     [Inject] private IJSRuntime Js { get; set; } = default!;
+    [Inject] private IToastService Toast { get; set; } = default!;
 
     private ReportListStats _stats = new();
     private string _report = "credential-access";
@@ -24,8 +26,6 @@ public partial class Reports
     private bool _sortAsc = true;
     private bool _hasRun;
     private bool _busy;
-    private string? _error;
-
     private string MonthLabel => DateTime.Today.ToString("MMMM yyyy");
     private bool CanExport => _hasRun && _headers is not null && GetFilteredRows().Any();
     private string FooterSummary => _hasRun && FilteredCount > 0
@@ -65,7 +65,6 @@ public partial class Reports
 
     private async Task Run()
     {
-        _error = null;
         _busy = true;
         _hasRun = true;
         _page = 1;
@@ -123,7 +122,7 @@ public partial class Reports
         }
         catch (Exception ex)
         {
-            _error = $"Failed to run report: {ex.Message}";
+            await Toast.ErrorAsync($"Failed to run report: {ex.Message}");
             _headers = null;
             _sortedRows = new List<List<string>>();
         }
@@ -145,6 +144,7 @@ public partial class Reports
 
         var name = $"{_report}-{DateTime.Today:yyyyMMdd}.csv";
         await Js.InvokeVoidAsync("saDownload.textFile", name, sb.ToString());
+        await Toast.SuccessAsync("Report exported to CSV.");
     }
 
     private static string CsvEscape(string value)

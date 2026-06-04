@@ -3,15 +3,11 @@
 @rendermode InteractiveServer
 @inject SecureAccess.Application.Features.Users.IUserService UserSvc
 @inject ICurrentUserService Current
+@inject IToastService Toast
 
 <PageTitle>Users - Secure Access</PageTitle>
 
 <div class="users-page">
-    @if (!string.IsNullOrEmpty(_error) && _editing is null)
-    {
-        <div class="users-page-alert" role="alert">@_error</div>
-    }
-
     <header class="users-page-header">
         <div>
             <h1>Users</h1>
@@ -424,6 +420,7 @@
         if (!result.Succeeded)
         {
             _deleteError = result.Error;
+            await Toast.ErrorAsync(result.Error ?? "Delete failed.");
             return;
         }
 
@@ -431,6 +428,7 @@
             _editing = null;
 
         await CloseDeleteModalAsync();
+        await Toast.SuccessAsync("User deleted successfully.");
         await Reload();
     }
 
@@ -459,10 +457,12 @@
         if (!result.Succeeded)
         {
             _error = result.Error;
+            await Toast.ErrorAsync(result.Error ?? "Save failed.");
             return;
         }
 
         await CloseEditModalAsync();
+        await Toast.SuccessAsync(_editingId == 0 ? "User created successfully." : "User updated successfully.");
         await Reload();
     }
 }

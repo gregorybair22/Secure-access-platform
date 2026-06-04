@@ -7,19 +7,11 @@
 @inject IBulkService BulkSvc
 @inject IMachineService MachineSvc
 @inject IClientService ClientSvc
+@inject IToastService Toast
 
 <PageTitle>Bulk Operations - Secure Access</PageTitle>
 
 <div class="bulk-page">
-    @if (!string.IsNullOrEmpty(_message))
-    {
-        <div class="bulk-page-success" role="status">@_message</div>
-    }
-    @if (!string.IsNullOrEmpty(_error))
-    {
-        <div class="bulk-page-alert" role="alert">@_error</div>
-    }
-
     <header class="bulk-page-header">
         <div class="bulk-page-title-block">
             <div class="bulk-page-icon" aria-hidden="true">
@@ -205,8 +197,6 @@
     private bool _mOver;
     private bool _cFill;
     private bool _cOver;
-    private string? _message;
-    private string? _error;
     private bool _busy;
     private string? _busyOp;
 
@@ -237,17 +227,16 @@
 
     private async Task CopyMachines()
     {
-        ClearAlerts();
         if (_srcMachine == 0 || _tgtMachines.Count == 0)
         {
-            _error = "Select a source machine and at least one target machine.";
+            await Toast.ErrorAsync("Select a source machine and at least one target machine.");
             return;
         }
 
         _tgtMachines = _tgtMachines.Where(id => id != _srcMachine).Distinct().ToList();
         if (_tgtMachines.Count == 0)
         {
-            _error = "Select at least one target machine other than the source.";
+            await Toast.ErrorAsync("Select at least one target machine other than the source.");
             return;
         }
 
@@ -265,11 +254,11 @@
 
             if (!result.Succeeded)
             {
-                _error = result.Error;
+                await Toast.ErrorAsync(result.Error ?? "Copy failed.");
                 return;
             }
 
-            _message = $"Copy complete: created {result.Value!.CreatedCredentials}, updated {result.Value.AffectedCredentials} credential(s).";
+            await Toast.SuccessAsync($"Copy complete: created {result.Value!.CreatedCredentials}, updated {result.Value.AffectedCredentials} credential(s).");
         }
         finally
         {
@@ -280,17 +269,16 @@
 
     private async Task CopyClients()
     {
-        ClearAlerts();
         if (_srcClient == 0 || _tgtClients.Count == 0)
         {
-            _error = "Select a source client and at least one target client.";
+            await Toast.ErrorAsync("Select a source client and at least one target client.");
             return;
         }
 
         _tgtClients = _tgtClients.Where(id => id != _srcClient).Distinct().ToList();
         if (_tgtClients.Count == 0)
         {
-            _error = "Select at least one target client other than the source.";
+            await Toast.ErrorAsync("Select at least one target client other than the source.");
             return;
         }
 
@@ -308,22 +296,16 @@
 
             if (!result.Succeeded)
             {
-                _error = result.Error;
+                await Toast.ErrorAsync(result.Error ?? "Copy failed.");
                 return;
             }
 
-            _message = $"Copy complete: created {result.Value!.CreatedCredentials}, updated {result.Value.AffectedCredentials} credential(s).";
+            await Toast.SuccessAsync($"Copy complete: created {result.Value!.CreatedCredentials}, updated {result.Value.AffectedCredentials} credential(s).");
         }
         finally
         {
             _busy = false;
             _busyOp = null;
         }
-    }
-
-    private void ClearAlerts()
-    {
-        _message = null;
-        _error = null;
     }
 }

@@ -3,6 +3,7 @@ using SecureAccess.Application.Features.AccessRequests;
 using SecureAccess.Application.Features.Clients;
 using SecureAccess.Application.Features.Machines;
 using SecureAccess.Domain.Enums;
+using SecureAccess.Web.Services;
 
 namespace SecureAccess.Web.Components.Pages;
 
@@ -11,6 +12,7 @@ public partial class RequestAccess
     [Inject] private IAccessRequestService AccessRequests { get; set; } = default!;
     [Inject] private IMachineService Machines { get; set; } = default!;
     [Inject] private IClientService Clients { get; set; } = default!;
+    [Inject] private IToastService Toast { get; set; } = default!;
 
     [SupplyParameterFromQuery]
     public int? MachineId { get; set; }
@@ -21,7 +23,6 @@ public partial class RequestAccess
     private CredentialAccessRequest _request = new();
     private AccessRequestResult? _result;
     private readonly HashSet<string> _shown = new();
-    private string? _error;
     private bool _busy;
     private bool _showNote = true;
 
@@ -53,7 +54,6 @@ public partial class RequestAccess
 
     private async Task SubmitAsync()
     {
-        _error = null;
         _result = null;
         _busy = true;
 
@@ -61,31 +61,32 @@ public partial class RequestAccess
         {
             if (_request.MachineId == 0)
             {
-                _error = "Please select a machine.";
+                await Toast.ErrorAsync("Please select a machine.");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(_request.Reason))
             {
-                _error = "Please enter a reason for this access request.";
+                await Toast.ErrorAsync("Please enter a reason for this access request.");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(_request.InternalTicket))
             {
-                _error = "Please enter an internal ticket reference.";
+                await Toast.ErrorAsync("Please enter an internal ticket reference.");
                 return;
             }
 
             var result = await AccessRequests.RequestCredentialsAsync(_request);
             if (!result.Succeeded)
             {
-                _error = result.Error;
+                await Toast.ErrorAsync(result.Error ?? "Request failed.");
                 return;
             }
 
             _result = result.Value;
             _shown.Clear();
+            await Toast.SuccessAsync("Credentials retrieved successfully.");
         }
         finally
         {
@@ -95,7 +96,6 @@ public partial class RequestAccess
 
     private void ClearForm()
     {
-        _error = null;
         _result = null;
         _shown.Clear();
         _clientId = 0;

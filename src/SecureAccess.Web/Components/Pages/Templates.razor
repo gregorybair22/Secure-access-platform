@@ -8,19 +8,11 @@
 @inject ITemplateService TemplateSvc
 @inject ICredentialTypeService TypeSvc
 @inject IMachineService MachineSvc
+@inject IToastService Toast
 
 <PageTitle>Credential Templates - Secure Access</PageTitle>
 
 <div class="templates-page">
-    @if (!string.IsNullOrEmpty(_message))
-    {
-        <div class="templates-page-success" role="status">@_message</div>
-    }
-    @if (!string.IsNullOrEmpty(_error) && _editing is null && _deleteTarget is null && _applying is null)
-    {
-        <div class="templates-page-alert" role="alert">@_error</div>
-    }
-
     <header class="templates-page-header">
         <div class="templates-page-title-block">
             <div class="templates-page-icon" aria-hidden="true">
@@ -401,7 +393,6 @@
     private readonly List<int> _selectedMachineIds = new();
     private bool _fillEmpty;
     private bool _overwrite;
-    private string? _message;
     private string? _error;
     private string? _deleteError;
 
@@ -615,6 +606,7 @@
         if (!result.Succeeded)
         {
             _deleteError = result.Error;
+            await Toast.ErrorAsync(result.Error ?? "Delete failed.");
             return;
         }
 
@@ -622,7 +614,7 @@
             _editing = null;
 
         await CloseDeleteModalAsync();
-        _message = null;
+        await Toast.SuccessAsync("Template deleted successfully.");
         await Reload();
     }
 
@@ -638,11 +630,13 @@
         if (!result.Succeeded)
         {
             _error = result.Error;
+            await Toast.ErrorAsync(result.Error ?? "Save failed.");
             return;
         }
 
         _error = null;
         await CloseEditModalAsync();
+        await Toast.SuccessAsync(_editingId == 0 ? "Template created successfully." : "Template updated successfully.");
         await Reload();
     }
 
@@ -662,10 +656,11 @@
         if (!result.Succeeded)
         {
             _error = result.Error;
+            await Toast.ErrorAsync(result.Error ?? "Apply failed.");
             return;
         }
 
-        _message = $"Template applied to {result.Value} machine(s).";
+        await Toast.SuccessAsync($"Template applied to {result.Value} machine(s).");
         await CloseApplyModalAsync();
     }
 

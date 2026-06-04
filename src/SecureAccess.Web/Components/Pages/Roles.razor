@@ -2,15 +2,11 @@
 @attribute [Authorize(Policy = "perm:roles.manage")]
 @rendermode InteractiveServer
 @inject SecureAccess.Application.Features.Users.IUserService Users
+@inject IToastService Toast
 
 <PageTitle>Roles &amp; Permissions - Secure Access</PageTitle>
 
 <div class="roles-page">
-    @if (!string.IsNullOrEmpty(_message))
-    {
-        <div class="roles-page-alert" role="status">@_message</div>
-    }
-
     <header class="roles-page-header">
         <div class="roles-page-title-block">
             <div class="roles-page-icon" aria-hidden="true">
@@ -88,38 +84,43 @@
                     </div>
                 </div>
 
-                @if (expanded)
-                {
-                    <div class="roles-card-body">
-                        <div class="roles-permissions-grid">
-                            @foreach (var group in PermissionGroups)
-                            {
-                                var items = group.Permissions;
-                                if (items.Count == 0) continue;
+                <div class="roles-card-collapse" aria-hidden="@(!expanded)">
+                    <div class="roles-card-collapse-inner">
+                        <div class="roles-card-body">
+                            <div class="roles-permissions-grid">
+                                @{ var categoryIndex = 0; }
+                                @foreach (var group in PermissionGroups)
+                                {
+                                    var items = group.Permissions;
+                                    if (items.Count == 0) continue;
+                                    var delayMs = categoryIndex * 45;
+                                    categoryIndex++;
 
-                                <div class="roles-perm-category">
-                                    <div class="roles-category-head">
-                                        <span class="roles-category-icon" aria-hidden="true">@CategoryIcon(group.DisplayName)</span>
-                                        <span class="roles-category-label">@group.DisplayName</span>
+                                    <div class="roles-perm-category" style="--roles-stagger: @(delayMs)ms">
+                                        <div class="roles-category-head">
+                                            <span class="roles-category-icon" aria-hidden="true">@CategoryIcon(group.DisplayName)</span>
+                                            <span class="roles-category-label">@group.DisplayName</span>
+                                        </div>
+                                        <div class="roles-perm-list">
+                                            @foreach (var p in items)
+                                            {
+                                                var inputId = $"{role.Id}-{p.Code}";
+                                                <label class="roles-perm-item" for="@inputId">
+                                                    <input type="checkbox"
+                                                           id="@inputId"
+                                                           checked="@role.Permissions.Contains(p.Code)"
+                                                           disabled="@(!expanded)"
+                                                           @onchange="e => Toggle(role, p.Code, (bool)e.Value!)" />
+                                                    <span>@p.Label</span>
+                                                </label>
+                                            }
+                                        </div>
                                     </div>
-                                    <div class="roles-perm-list">
-                                        @foreach (var p in items)
-                                        {
-                                            var inputId = $"{role.Id}-{p.Code}";
-                                            <label class="roles-perm-item" for="@inputId">
-                                                <input type="checkbox"
-                                                       id="@inputId"
-                                                       checked="@role.Permissions.Contains(p.Code)"
-                                                       @onchange="e => Toggle(role, p.Code, (bool)e.Value!)" />
-                                                <span>@p.Label</span>
-                                            </label>
-                                        }
-                                    </div>
-                                </div>
-                            }
+                                }
+                            </div>
                         </div>
                     </div>
-                }
+                </div>
             </article>
         }
     </div>
@@ -135,7 +136,6 @@
     private List<SecureAccess.Application.Features.Users.RoleDto> _roles = new();
     private List<PermissionItem> _allPermissions = new();
     private readonly HashSet<int> _expanded = new();
-    private string? _message;
 
     private bool _allExpanded => _roles.Count > 0 && _roles.All(r => _expanded.Contains(r.Id));
 
@@ -198,9 +198,10 @@
     private async Task Save(SecureAccess.Application.Features.Users.RoleDto role)
     {
         var result = await Users.UpdateRolePermissionsAsync(role.Id, role.Permissions.ToList());
-        _message = result.Succeeded
-            ? $"Saved permissions for {role.Name}."
-            : result.Error ?? "Could not save permissions.";
+        if (result.Succeeded)
+            await Toast.SuccessAsync($"Saved permissions for {role.Name}.");
+        else
+            await Toast.ErrorAsync(result.Error ?? "Could not save permissions.");
     }
 
     private static string AccessBadge(string roleName) => roleName switch

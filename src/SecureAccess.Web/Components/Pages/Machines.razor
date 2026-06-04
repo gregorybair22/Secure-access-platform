@@ -7,6 +7,7 @@
 @inject IMachineService MachineSvc
 @inject IClientService ClientSvc
 @inject ICurrentUserService Current
+@inject IToastService Toast
 
 <PageTitle>Machines - Secure Access</PageTitle>
 
@@ -552,6 +553,7 @@
         if (!result.Succeeded)
         {
             _deleteError = result.Error;
+            await Toast.ErrorAsync(result.Error ?? "Delete failed.");
             return;
         }
 
@@ -559,6 +561,7 @@
             _editing = null;
 
         await CloseDeleteModalAsync();
+        await Toast.SuccessAsync("Machine deleted successfully.");
         await Reload();
     }
 
@@ -567,6 +570,7 @@
         if (_form.ClientId == 0)
         {
             _error = "Please select a client.";
+            await Toast.ErrorAsync(_error);
             return;
         }
 
@@ -579,10 +583,12 @@
         if (!result.Succeeded)
         {
             _error = result.Error;
+            await Toast.ErrorAsync(result.Error ?? "Save failed.");
             return;
         }
 
         await CloseEditModalAsync();
+        await Toast.SuccessAsync(_editingId == 0 ? "Machine created successfully." : "Machine updated successfully.");
         await Reload();
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using SecureAccess.Application.Abstractions;
 using SecureAccess.Application.Common;
 using SecureAccess.Application.Features.ImportExport;
+using SecureAccess.Web.Services;
 
 namespace SecureAccess.Web.Components.Pages;
 
@@ -10,10 +11,9 @@ public partial class ImportExport
 {
     [Inject] private IImportService Import { get; set; } = default!;
     [Inject] private ICurrentUserService Current { get; set; } = default!;
+    [Inject] private IToastService Toast { get; set; } = default!;
 
     private string _entity = "Clients";
-    private string? _message;
-    private string? _error;
     private string? _selectedFileName;
     private bool _importing;
 
@@ -25,8 +25,6 @@ public partial class ImportExport
 
     private async Task OnFile(InputFileChangeEventArgs e)
     {
-        _message = null;
-        _error = null;
         var file = e.File;
         if (file is null)
             return;
@@ -43,15 +41,15 @@ public partial class ImportExport
             var result = await Import.ImportAsync(entity, ms, file.Name);
             if (!result.Succeeded)
             {
-                _error = result.Error;
+                await Toast.ErrorAsync(result.Error ?? "Import failed.");
                 return;
             }
 
-            _message = $"Import complete: {result.Value!.Created} created, {result.Value.Updated} updated, {result.Value.Skipped} skipped.";
+            await Toast.SuccessAsync($"Import complete: {result.Value!.Created} created, {result.Value.Updated} updated, {result.Value.Skipped} skipped.");
         }
         catch (Exception ex)
         {
-            _error = $"Import failed: {ex.Message}";
+            await Toast.ErrorAsync($"Import failed: {ex.Message}");
         }
         finally
         {

@@ -16,18 +16,21 @@
 
     if (!type || !message) return;
 
-    toastr.options = {
-        closeButton: true,
-        progressBar: true,
-        positionClass: 'toast-top-right',
-        timeOut: 5000,
-        extendedTimeOut: 2000
-    };
-
-    if (typeof toastr[type] === 'function') {
-        toastr[type](message);
+    if (window.saToast && typeof window.saToast.show === 'function') {
+        window.saToast.show(type, message);
     } else {
-        toastr.info(message);
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: 'toast-top-right',
+            timeOut: 5000,
+            extendedTimeOut: 2000
+        };
+        if (typeof toastr[type] === 'function') {
+            toastr[type](message);
+        } else {
+            toastr.info(message);
+        }
     }
 
     params.delete('toast');

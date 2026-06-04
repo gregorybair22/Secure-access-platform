@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "SecureAccess.Application/1.0.0": {
+        "dependencies": {
+          "SecureAccess.Domain": "1.0.0"
+        },
+        "runtime": {
+          "SecureAccess.Application.dll": {}
+        }
+      },
+      "SecureAccess.Domain/1.0.0": {
+        "runtime": {
+          "SecureAccess.Domain.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "SecureAccess.Application/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SecureAccess.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

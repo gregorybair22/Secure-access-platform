@@ -94,6 +94,12 @@
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
     overflow: hidden;
+    transition: box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.roles-card.expanded {
+    border-color: #c7d2fe;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.08);
 }
 
 .roles-card-header {
@@ -268,13 +274,57 @@
 .roles-btn-chevron svg {
     width: 16px;
     height: 16px;
-    transition: transform 0.2s;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Accordion expand/collapse */
+.roles-card-collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.roles-card.expanded .roles-card-collapse {
+    grid-template-rows: 1fr;
+}
+
+.roles-card-collapse-inner {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.roles-card:not(.expanded) .roles-card-collapse {
+    pointer-events: none;
 }
 
 .roles-card-body {
     padding: 0 1.35rem 1.35rem;
-    border-top: 1px solid var(--sa-border, #e2e8f0);
+    border-top: 1px solid transparent;
     background: #fafbfc;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition:
+        opacity 0.32s ease,
+        transform 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.35s ease;
+}
+
+.roles-card.expanded .roles-card-body {
+    border-top-color: var(--sa-border, #e2e8f0);
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.08s;
+}
+
+@keyframes roles-category-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .roles-permissions-grid {
@@ -286,6 +336,13 @@
 
 .roles-perm-category {
     min-width: 0;
+}
+
+.roles-card.expanded .roles-perm-category {
+    opacity: 1;
+    transform: translateY(0);
+    animation: roles-category-in 0.38s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: calc(0.12s + var(--roles-stagger, 0ms));
 }
 
 .roles-category-head {
@@ -378,5 +435,19 @@
 @media (max-width: 480px) {
     .roles-permissions-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .roles-card,
+    .roles-card-collapse,
+    .roles-card-body,
+    .roles-btn-chevron svg {
+        transition-duration: 0.01ms;
+        transition-delay: 0ms;
+    }
+
+    .roles-card.expanded .roles-perm-category {
+        animation: none;
     }
 }
