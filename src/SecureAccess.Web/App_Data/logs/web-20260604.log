@@ -1085,3 +1085,21 @@ Microsoft.AspNetCore.Http.BadHttpRequestException: Failed to bind parameter "Exp
 2026-06-04 04:07:50.870 -07:00 [INF] HTTP GET /roles responded 200 in 4.1711 ms
 2026-06-04 04:08:01.329 -07:00 [INF] Application is shutting down...
 2026-06-04 04:08:01.329 -07:00 [INF] HTTP GET /_blazor responded 101 in 47542.4022 ms
+2026-06-04 04:09:10.468 -07:00 [INF] Now listening on: http://localhost:5005
+2026-06-04 04:09:10.483 -07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-06-04 04:09:10.483 -07:00 [INF] Hosting environment: Development
+2026-06-04 04:09:10.483 -07:00 [INF] Content root path: D:\La-Fabrica-de-Software\17 - Secure-access-platform\src\SecureAccess.Web
+2026-06-04 04:09:10.605 -07:00 [WRN] Failed to determine the https port for redirect.
+2026-06-04 04:09:10.786 -07:00 [INF] HTTP GET / responded 200 in 180.3119 ms
+2026-06-04 04:09:10.802 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 304 in 1.0059 ms
+2026-06-04 04:09:10.804 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 1.7501 ms
+2026-06-04 04:09:10.892 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 2.7229 ms
+2026-06-04 04:09:10.904 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 3.0637 ms
+2026-06-04 04:09:13.252 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.9229 ms
+2026-06-04 04:09:23.684 -07:00 [INF] HTTP GET /request-access responded 200 in 49.3091 ms
+2026-06-04 04:09:25.720 -07:00 [INF] HTTP GET /clients responded 200 in 53.8022 ms
+2026-06-04 04:09:26.460 -07:00 [INF] HTTP GET /machines responded 200 in 44.8819 ms
+2026-06-04 04:09:26.972 -07:00 [INF] HTTP GET /credentials responded 200 in 34.9844 ms
+2026-06-04 04:09:27.279 -07:00 [INF] HTTP GET /templates responded 200 in 32.6207 ms
+2026-06-04 04:09:28.108 -07:00 [INF] HTTP GET / responded 200 in 20.7208 ms
+2026-06-04 04:09:32.121 -07:00 [INF] HTTP GET /request-access responded 200 in 6.9403 ms
