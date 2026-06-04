@@ -18,6 +18,14 @@ public class MachineDto
     public int CredentialCount { get; set; }
 }
 
+public class MachineListStats
+{
+    public int TotalMachines { get; set; }
+    public int OnlineMachines { get; set; }
+    public int OfflineMachines { get; set; }
+    public int MachinesWithCredentials { get; set; }
+}
+
 public class SaveMachineRequest
 {
     public int ClientId { get; set; }
@@ -32,6 +40,7 @@ public class SaveMachineRequest
 
 public interface IMachineService
 {
+    Task<MachineListStats> GetListStatsAsync(int? clientId = null, CancellationToken ct = default);
     Task<PagedResult<MachineDto>> GetMachinesAsync(int? clientId, string? search, int page, int pageSize, CancellationToken ct = default);
     Task<MachineDto?> GetMachineAsync(int id, CancellationToken ct = default);
     Task<Result<int>> CreateAsync(SaveMachineRequest request, CancellationToken ct = default);

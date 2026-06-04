@@ -150,12 +150,13 @@
                             <th class="text-center"><button type="button" class="clients-th-sort @SortClass("contact")" @onclick='() => SortBy("contact")'>Contact @SortIcon</button></th>
                             <th class="text-center clients-th-num"><button type="button" class="clients-th-sort @SortClass("machines")" @onclick='() => SortBy("machines")'>Machines @SortIcon</button></th>
                             <th class="text-center"><button type="button" class="clients-th-sort @SortClass("status")" @onclick='() => SortBy("status")'>Status @SortIcon</button></th>
+                            <th class="text-center clients-th-actions">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var c in PagedItems)
                         {
-                            <tr class="@(CanEdit ? "clients-row-clickable" : null)" @onclick="() => OnRowClick(c)">
+                            <tr>
                                 <td class="text-center"><span class="clients-code">@c.CustomerCode</span></td>
                                 <td class="text-center">
                                     <span class="clients-name">
@@ -171,6 +172,36 @@
                                     <a href="/machines?clientId=@c.Id" @onclick:stopPropagation="true">@c.MachineCount</a>
                                 </td>
                                 <td class="text-center"><span class="clients-status-badge @StatusClass(c.Status)">@c.Status</span></td>
+                                <td class="text-center">
+                                    <div class="clients-actions">
+                                        @if (Current.HasPermission(Permissions.ClientsEdit))
+                                        {
+                                            <button type="button" class="clients-btn-edit" @onclick="() => Edit(c)">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                                </svg>
+                                                Edit
+                                            </button>
+                                        }
+                                        @if (Current.HasPermission(Permissions.ClientsDelete))
+                                        {
+                                            <button type="button" class="clients-btn-delete" @onclick="() => OpenDeleteConfirm(c)">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                    <polyline points="3 6 5 6 21 6"/>
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                                    <line x1="10" y1="11" x2="10" y2="17"/>
+                                                    <line x1="14" y1="11" x2="14" y2="17"/>
+                                                </svg>
+                                                Delete
+                                            </button>
+                                        }
+                                        @if (!Current.HasPermission(Permissions.ClientsEdit) && !Current.HasPermission(Permissions.ClientsDelete))
+                                        {
+                                            <span class="clients-actions-empty">—</span>
+                                        }
+                                    </div>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -207,8 +238,8 @@
 
 @if (_deleteTarget is not null)
 {
-    <div class="clients-modal-backdrop" @onclick="CloseDeleteModal">
-        <div class="clients-modal clients-modal-confirm" role="alertdialog" aria-modal="true" aria-labelledby="clients-delete-title" @onclick:stopPropagation="true">
+    <div class="sa-modal-backdrop clients-modal-backdrop @(_deleteModalClosing ? "is-closing" : null)" @onclick="CloseDeleteModalAsync">
+        <div class="sa-modal-panel clients-modal clients-modal-confirm" role="alertdialog" aria-modal="true" aria-labelledby="clients-delete-title" @onclick:stopPropagation="true">
             <div class="clients-modal-header clients-modal-header-danger">
                 <div class="clients-delete-header-main">
                     <div class="clients-delete-icon" aria-hidden="true">
@@ -222,7 +253,7 @@
                         <p class="clients-modal-subtitle">This action cannot be undone.</p>
                     </div>
                 </div>
-                <button type="button" class="clients-modal-close" aria-label="Close" @onclick="CloseDeleteModal">×</button>
+                <button type="button" class="clients-modal-close" aria-label="Close" @onclick="CloseDeleteModalAsync">×</button>
             </div>
             <div class="clients-modal-body">
                 @if (!string.IsNullOrEmpty(_deleteError))
@@ -234,7 +265,7 @@
                 </p>
             </div>
             <div class="clients-modal-footer">
-                <button type="button" class="clients-btn-secondary" @onclick="CloseDeleteModal">Cancel</button>
+                <button type="button" class="clients-btn-secondary" @onclick="CloseDeleteModalAsync">Cancel</button>
                 <button type="button" class="clients-btn-danger" @onclick="ConfirmDeleteAsync">Delete client</button>
             </div>
         </div>
@@ -243,11 +274,11 @@
 
 @if (_editing is not null)
 {
-    <div class="clients-modal-backdrop" @onclick="CloseEditModal">
-        <div class="clients-modal" role="dialog" aria-modal="true" aria-labelledby="clients-modal-title" @onclick:stopPropagation="true">
+    <div class="sa-modal-backdrop clients-modal-backdrop @(_editModalClosing ? "is-closing" : null)" @onclick="CloseEditModalAsync">
+        <div class="sa-modal-panel clients-modal" role="dialog" aria-modal="true" aria-labelledby="clients-modal-title" @onclick:stopPropagation="true">
             <div class="clients-modal-header">
                 <h2 id="clients-modal-title">@(_editingId == 0 ? "New Client" : "Edit Client")</h2>
-                <button type="button" class="clients-modal-close" aria-label="Close" @onclick="CloseEditModal">×</button>
+                <button type="button" class="clients-modal-close" aria-label="Close" @onclick="CloseEditModalAsync">×</button>
             </div>
             <div class="clients-modal-body">
                 @if (!string.IsNullOrEmpty(_error))
@@ -303,10 +334,10 @@
             <div class="clients-modal-footer">
                 @if (_editingId != 0 && Current.HasPermission(Permissions.ClientsDelete))
                 {
-                    <button type="button" class="clients-btn-danger clients-modal-delete" @onclick="OpenDeleteFromEdit">Delete</button>
+                    <button type="button" class="clients-btn-danger clients-modal-delete" @onclick="OpenDeleteFromEditAsync">Delete</button>
                 }
                 <div class="clients-modal-footer-actions">
-                    <button type="button" class="clients-btn-secondary" @onclick="CloseEditModal">Cancel</button>
+                    <button type="button" class="clients-btn-secondary" @onclick="CloseEditModalAsync">Cancel</button>
                     <button type="button" class="clients-btn-primary" @onclick="Save">Save</button>
                 </div>
             </div>
@@ -319,6 +350,8 @@
     private ClientListStats _stats = new();
 
     private bool? _editing;
+    private bool _editModalClosing;
+    private bool _deleteModalClosing;
     private int _editingId;
     private SaveClientRequest _form = new();
     private string? _error;
@@ -331,8 +364,6 @@
     private bool _sortAsc = true;
     private int _page = 1;
     private int _pageSize = 10;
-
-    private bool CanEdit => Current.HasPermission(Permissions.ClientsEdit);
 
     private MarkupString SortIcon => new(
         "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\">" +
@@ -413,25 +444,41 @@
         };
     }
 
-    private void OnRowClick(ClientDto c)
+    private void OpenDeleteConfirm(ClientDto c)
     {
-        if (CanEdit)
-            Edit(c);
+        _deleteTarget = c;
+        _deleteError = null;
     }
 
-    private void CloseEditModal() => _editing = null;
+    private Task CloseEditModalAsync()
+    {
+        if (_editing is null || _editModalClosing) return Task.CompletedTask;
+        return ModalAnimation.CloseAsync(
+            () => _editModalClosing,
+            v => _editModalClosing = v,
+            () => _editing = null,
+            StateHasChanged);
+    }
 
-    private void OpenDeleteFromEdit()
+    private async Task OpenDeleteFromEditAsync()
     {
         if (_editingId == 0) return;
         var target = _items.FirstOrDefault(c => c.Id == _editingId);
         if (target is null) return;
-        _editing = null;
+        await CloseEditModalAsync();
         _deleteTarget = target;
         _deleteError = null;
     }
 
-    private void CloseDeleteModal() => _deleteTarget = null;
+    private Task CloseDeleteModalAsync()
+    {
+        if (_deleteTarget is null || _deleteModalClosing) return Task.CompletedTask;
+        return ModalAnimation.CloseAsync(
+            () => _deleteModalClosing,
+            v => _deleteModalClosing = v,
+            () => _deleteTarget = null,
+            StateHasChanged);
+    }
 
     private void SortBy(string column)
     {
@@ -485,7 +532,7 @@
         if (_editingId == _deleteTarget.Id)
             _editing = null;
 
-        _deleteTarget = null;
+        await CloseDeleteModalAsync();
         await Reload();
     }
 
@@ -503,7 +550,7 @@
             return;
         }
 
-        _editing = null;
+        await CloseEditModalAsync();
         await Reload();
     }
 }

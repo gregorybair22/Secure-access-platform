@@ -12,6 +12,23 @@ public class CredentialTypeService : ICredentialTypeService
 
     public CredentialTypeService(AppDbContext db) => _db = db;
 
+    public async Task<CredentialTypeListStats> GetListStatsAsync(CancellationToken ct = default)
+    {
+        var query = _db.CredentialTypes.AsNoTracking();
+        var total = await query.CountAsync(ct);
+        var system = await query.CountAsync(t => t.IsSystem, ct);
+        var active = await query.CountAsync(t => t.IsActive, ct);
+        var custom = await query.CountAsync(t => !t.IsSystem, ct);
+
+        return new CredentialTypeListStats
+        {
+            TotalTypes = total,
+            SystemTypes = system,
+            ActiveTypes = active,
+            CustomTypes = custom
+        };
+    }
+
     public async Task<IReadOnlyList<CredentialTypeDto>> GetTypesAsync(bool includeInactive = false, CancellationToken ct = default)
     {
         var query = _db.CredentialTypes.AsNoTracking().AsQueryable();

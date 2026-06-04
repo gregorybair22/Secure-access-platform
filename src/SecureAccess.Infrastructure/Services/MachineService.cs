@@ -21,15 +21,39 @@ public class MachineService : IMachineService
         _current = current;
     }
 
+    private IQueryable<Machine> VisibleMachinesQuery()
+    {
+        var query = _db.Machines.AsNoTracking().AsQueryable();
+        if (!_current.IsInRole(RoleNames.Administrator) && !_current.HasPermission(Permissions.AuditView))
+            query = query.Where(m => !m.Client.IsRestricted);
+        return query;
+    }
+
+    public async Task<MachineListStats> GetListStatsAsync(int? clientId = null, CancellationToken ct = default)
+    {
+        var query = VisibleMachinesQuery();
+        if (clientId.HasValue)
+            query = query.Where(m => m.ClientId == clientId.Value);
+
+        var total = await query.CountAsync(ct);
+        var online = await query.CountAsync(m => m.Status == EntityStatus.Active, ct);
+        var withCredentials = await query.CountAsync(m => m.Credentials.Any(c => c.IsActive), ct);
+
+        return new MachineListStats
+        {
+            TotalMachines = total,
+            OnlineMachines = online,
+            OfflineMachines = total - online,
+            MachinesWithCredentials = withCredentials
+        };
+    }
+
     public async Task<PagedResult<MachineDto>> GetMachinesAsync(int? clientId, string? search, int page, int pageSize, CancellationToken ct = default)
     {
         page = Math.Max(1, page);
         pageSize = Math.Clamp(pageSize, 1, 200);
 
-        var query = _db.Machines.AsNoTracking().Include(m => m.Client).AsQueryable();
-
-        if (!_current.IsInRole(RoleNames.Administrator) && !_current.HasPermission(Permissions.AuditView))
-            query = query.Where(m => !m.Client.IsRestricted);
+        IQueryable<Machine> query = VisibleMachinesQuery().Include(m => m.Client);
 
         if (clientId.HasValue) query = query.Where(m => m.ClientId == clientId.Value);
 

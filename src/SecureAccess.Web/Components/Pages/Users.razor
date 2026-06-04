@@ -101,7 +101,7 @@
                                                 class="users-btn-delete"
                                                 disabled="@(Current.UserId == u.Id)"
                                                 title="@(Current.UserId == u.Id ? "You cannot delete your own account" : "Delete user")"
-                                                @onclick="() => OpenDeleteConfirm(u)">
+                                                @onclick="() => OpenDeleteConfirmAsync(u)">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                                 <polyline points="3 6 5 6 21 6"/>
                                                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -136,8 +136,8 @@
 
 @if (_deleteTarget is not null)
 {
-    <div class="users-modal-backdrop" @onclick="CloseDeleteModal">
-        <div class="users-modal users-modal-confirm" role="alertdialog" aria-modal="true" aria-labelledby="users-delete-title" @onclick:stopPropagation="true">
+    <div class="sa-modal-backdrop users-modal-backdrop @(_deleteModalClosing ? "is-closing" : null)" @onclick="CloseDeleteModalAsync">
+        <div class="sa-modal-panel users-modal users-modal-confirm" role="alertdialog" aria-modal="true" aria-labelledby="users-delete-title" @onclick:stopPropagation="true">
             <div class="users-modal-header users-modal-header-danger">
                 <div class="users-delete-header-main">
                     <div class="users-delete-icon" aria-hidden="true">
@@ -151,7 +151,7 @@
                         <p class="users-modal-subtitle">This action cannot be undone.</p>
                     </div>
                 </div>
-                <button type="button" class="users-modal-close" aria-label="Close" @onclick="CloseDeleteModal">×</button>
+                <button type="button" class="users-modal-close" aria-label="Close" @onclick="CloseDeleteModalAsync">×</button>
             </div>
             <div class="users-modal-body">
                 @if (!string.IsNullOrEmpty(_deleteError))
@@ -168,7 +168,7 @@
                 </p>
             </div>
             <div class="users-modal-footer">
-                <button type="button" class="users-btn-secondary" @onclick="CloseDeleteModal">Cancel</button>
+                <button type="button" class="users-btn-secondary" @onclick="CloseDeleteModalAsync">Cancel</button>
                 <button type="button" class="users-btn-danger" @onclick="ConfirmDeleteAsync">Delete user</button>
             </div>
         </div>
@@ -177,11 +177,11 @@
 
 @if (_editing is not null)
 {
-    <div class="users-modal-backdrop" @onclick="CloseEditModal">
-        <div class="users-modal" role="dialog" aria-modal="true" aria-labelledby="users-modal-title" @onclick:stopPropagation="true">
+    <div class="sa-modal-backdrop users-modal-backdrop @(_editModalClosing ? "is-closing" : null)" @onclick="CloseEditModalAsync">
+        <div class="sa-modal-panel users-modal" role="dialog" aria-modal="true" aria-labelledby="users-modal-title" @onclick:stopPropagation="true">
             <div class="users-modal-header">
                 <h2 id="users-modal-title">@(_editingId == 0 ? "New User" : "Edit User")</h2>
-                <button type="button" class="users-modal-close" aria-label="Close" @onclick="CloseEditModal">×</button>
+                <button type="button" class="users-modal-close" aria-label="Close" @onclick="CloseEditModalAsync">×</button>
             </div>
             <div class="users-modal-body">
                 @if (!string.IsNullOrEmpty(_error))
@@ -232,7 +232,7 @@
                 </div>
             </div>
             <div class="users-modal-footer">
-                <button type="button" class="users-btn-secondary" @onclick="CloseEditModal">Cancel</button>
+                <button type="button" class="users-btn-secondary" @onclick="CloseEditModalAsync">Cancel</button>
                 <button type="button" class="users-btn-primary" @onclick="Save">Save</button>
             </div>
         </div>
@@ -246,6 +246,8 @@
     private List<SecureAccess.Application.Features.Users.RoleDto> _roles = new();
 
     private bool? _editing;
+    private bool _editModalClosing;
+    private bool _deleteModalClosing;
     private int _editingId;
     private string _userName = "", _fullName = "", _email = "", _password = "";
     private EntityStatus _status = EntityStatus.Active;
@@ -344,15 +346,33 @@
             _selectedRoles.Add(r.Id);
     }
 
-    private void CloseEditModal() => _editing = null;
-
-    private void OpenDeleteConfirm(SecureAccess.Application.Features.Users.UserDto u)
+    private Task CloseEditModalAsync()
     {
+        if (_editing is null || _editModalClosing) return Task.CompletedTask;
+        return ModalAnimation.CloseAsync(
+            () => _editModalClosing,
+            v => _editModalClosing = v,
+            () => _editing = null,
+            StateHasChanged);
+    }
+
+    private async Task OpenDeleteConfirmAsync(SecureAccess.Application.Features.Users.UserDto u)
+    {
+        if (_editing is not null)
+            await CloseEditModalAsync();
         _deleteTarget = u;
         _deleteError = null;
     }
 
-    private void CloseDeleteModal() => _deleteTarget = null;
+    private Task CloseDeleteModalAsync()
+    {
+        if (_deleteTarget is null || _deleteModalClosing) return Task.CompletedTask;
+        return ModalAnimation.CloseAsync(
+            () => _deleteModalClosing,
+            v => _deleteModalClosing = v,
+            () => _deleteTarget = null,
+            StateHasChanged);
+    }
 
     private void ToggleRole(int id, bool on)
     {
@@ -410,7 +430,7 @@
         if (_editingId == _deleteTarget.Id)
             _editing = null;
 
-        _deleteTarget = null;
+        await CloseDeleteModalAsync();
         await Reload();
     }
 
@@ -442,7 +462,7 @@
             return;
         }
 
-        _editing = null;
+        await CloseEditModalAsync();
         await Reload();
     }
 }

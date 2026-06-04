@@ -25,6 +25,14 @@ public class CredentialTypeDto
     public List<CredentialFieldDto> Fields { get; set; } = new();
 }
 
+public class CredentialTypeListStats
+{
+    public int TotalTypes { get; set; }
+    public int SystemTypes { get; set; }
+    public int ActiveTypes { get; set; }
+    public int CustomTypes { get; set; }
+}
+
 public class SaveCredentialTypeRequest
 {
     public string Name { get; set; } = string.Empty;
@@ -36,6 +44,7 @@ public class SaveCredentialTypeRequest
 
 public interface ICredentialTypeService
 {
+    Task<CredentialTypeListStats> GetListStatsAsync(CancellationToken ct = default);
     Task<IReadOnlyList<CredentialTypeDto>> GetTypesAsync(bool includeInactive = false, CancellationToken ct = default);
     Task<CredentialTypeDto?> GetTypeAsync(int id, CancellationToken ct = default);
     Task<Result<int>> CreateAsync(SaveCredentialTypeRequest request, CancellationToken ct = default);
