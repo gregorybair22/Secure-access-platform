@@ -1,75 +1,180 @@
 @page "/import-export"
 @attribute [Authorize(Policy = "perm:data.export")]
 @rendermode InteractiveServer
-@inject SecureAccess.Application.Features.ImportExport.IImportService Import
-@inject ICurrentUserService Current
 
 <PageTitle>Import / Export - Secure Access</PageTitle>
 
-<h1>Import / Export</h1>
+<div class="impexp-page">
+    @if (!string.IsNullOrEmpty(_message))
+    {
+        <div class="impexp-page-success" role="status">@_message</div>
+    }
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <div class="impexp-page-alert" role="alert">@_error</div>
+    }
 
-<div class="card mb-3">
-    <div class="card-header">Export</div>
-    <div class="card-body">
-        <p>Download data as Excel, CSV or PDF.</p>
-        <div class="mb-2">
-            <strong>Clients:</strong>
-            <a class="btn btn-sm btn-outline-primary" href="/download/clients?format=Xlsx">Excel</a>
-            <a class="btn btn-sm btn-outline-primary" href="/download/clients?format=Csv">CSV</a>
-            <a class="btn btn-sm btn-outline-primary" href="/download/clients?format=Pdf">PDF</a>
+    <header class="impexp-page-header">
+        <div class="impexp-page-title-block">
+            <div class="impexp-page-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+            </div>
+            <div>
+                <h1>Import / Export</h1>
+                <p class="impexp-page-subtitle">Import data from CSV files or export existing data for backup and migration.</p>
+            </div>
         </div>
-        <div>
-            <strong>Machines:</strong>
-            <a class="btn btn-sm btn-outline-primary" href="/download/machines?format=Xlsx">Excel</a>
-            <a class="btn btn-sm btn-outline-primary" href="/download/machines?format=Csv">CSV</a>
-            <a class="btn btn-sm btn-outline-primary" href="/download/machines?format=Pdf">PDF</a>
-        </div>
-    </div>
-</div>
+    </header>
 
-@if (Current.HasPermission(Permissions.ImportData))
-{
-    <div class="card">
-        <div class="card-header">Import (.xlsx / .csv)</div>
-        <div class="card-body">
-            @if (!string.IsNullOrEmpty(_message)) { <div class="alert alert-success">@_message</div> }
-            @if (!string.IsNullOrEmpty(_error)) { <div class="alert alert-danger">@_error</div> }
-            <div class="row g-2 align-items-end">
-                <div class="col-md-4"><label class="form-label">Entity</label>
-                    <select class="form-select" @bind="_entity">
-                        <option value="Clients">Clients</option>
-                        <option value="Machines">Machines</option>
-                    </select>
+    <article class="impexp-card impexp-card-export">
+        <div class="impexp-card-head">
+            <div class="impexp-card-icon impexp-card-icon-export" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+            </div>
+            <div>
+                <h2>Export Data</h2>
+                <p>Download your clients and machines in Excel, CSV, or PDF format.</p>
+            </div>
+        </div>
+        <div class="impexp-card-body impexp-export-body">
+            <div class="impexp-export-rows">
+                <div class="impexp-export-row">
+                    <div class="impexp-export-label">
+                        <span class="impexp-export-label-icon impexp-export-label-clients" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                            </svg>
+                        </span>
+                        <span>Clients</span>
+                    </div>
+                    <div class="impexp-format-btns">
+                        <a class="impexp-format-btn impexp-format-excel" href="/download/clients?format=Xlsx">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                            Excel
+                        </a>
+                        <a class="impexp-format-btn" href="/download/clients?format=Csv">CSV</a>
+                        <a class="impexp-format-btn" href="/download/clients?format=Pdf">PDF</a>
+                    </div>
                 </div>
-                <div class="col-md-5">
-                    <label class="form-label">File</label>
-                    <InputFile class="form-control" OnChange="OnFile" accept=".xlsx,.csv" />
+                <div class="impexp-export-row">
+                    <div class="impexp-export-label">
+                        <span class="impexp-export-label-icon impexp-export-label-machines" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                                <line x1="8" y1="21" x2="16" y2="21"/>
+                                <line x1="12" y1="17" x2="12" y2="21"/>
+                            </svg>
+                        </span>
+                        <span>Machines</span>
+                    </div>
+                    <div class="impexp-format-btns">
+                        <a class="impexp-format-btn impexp-format-excel" href="/download/machines?format=Xlsx">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                            Excel
+                        </a>
+                        <a class="impexp-format-btn" href="/download/machines?format=Csv">CSV</a>
+                        <a class="impexp-format-btn" href="/download/machines?format=Pdf">PDF</a>
+                    </div>
                 </div>
             </div>
-            <p class="text-muted small mt-2">
-                Clients: columns Customer Code, Name, Contact, Phone, Email, Address.<br />
-                Machines: columns Customer Code, Machine, Serial Number, Model, Location.
-            </p>
+            <div class="impexp-export-aside" aria-hidden="true">
+                <div class="impexp-export-illustration">
+                    <svg viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="25" y="15" width="70" height="55" rx="6" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+                        <text x="42" y="48" fill="#2563eb" font-size="18" font-weight="700" font-family="system-ui">X</text>
+                        <path d="M60 75 L60 88 M52 80 L60 88 L68 80" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <p class="impexp-export-aside-title">Export your data</p>
+                <p class="impexp-export-aside-text">Choose a format and download a snapshot of your records.</p>
+            </div>
         </div>
-    </div>
-}
+    </article>
 
-@code {
-    private string _entity = "Clients";
-    private string? _message, _error;
-
-    private async Task OnFile(InputFileChangeEventArgs e)
+    @if (CanImport)
     {
-        _message = null; _error = null;
-        var file = e.File;
-        if (file is null) return;
-        var entity = Enum.Parse<SecureAccess.Application.Features.ImportExport.ImportEntity>(_entity);
-
-        await using var ms = new MemoryStream();
-        await file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).CopyToAsync(ms);
-        ms.Position = 0;
-        var result = await Import.ImportAsync(entity, ms, file.Name);
-        if (!result.Succeeded) { _error = result.Error; return; }
-        _message = $"Imported: {result.Value!.Created} created, {result.Value.Updated} updated, {result.Value.Skipped} skipped.";
+        <article class="impexp-card impexp-card-import">
+            <div class="impexp-card-head">
+                <div class="impexp-card-icon impexp-card-icon-import" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2>Import Data</h2>
+                    <p>Upload a spreadsheet to create or update records in bulk.</p>
+                </div>
+            </div>
+            <div class="impexp-card-body impexp-import-body">
+                <div class="impexp-import-form">
+                    <div class="impexp-field">
+                        <label for="impexp-entity">Entity</label>
+                        <div class="impexp-select-wrap">
+                            <span class="impexp-select-icon" aria-hidden="true">@EntityIcon</span>
+                            <select id="impexp-entity" class="impexp-select" @bind="_entity">
+                                <option value="Clients">Clients</option>
+                                <option value="Machines">Machines</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="impexp-field impexp-field-file">
+                        <span class="impexp-field-label">File</span>
+                        <div class="impexp-file-row">
+                            <label class="impexp-file-btn" for="impexp-file-input">Choose File</label>
+                            <span class="impexp-file-name" title="@_selectedFileName">@(_selectedFileName ?? "No file chosen")</span>
+                        </div>
+                    </div>
+                    <div class="impexp-info-box">
+                        <p class="impexp-info-title">Required columns</p>
+                        @if (_entity == "Clients")
+                        {
+                            <p>Customer Code, Name, Contact, Phone, Email, Address</p>
+                        }
+                        else
+                        {
+                            <p>Customer Code, Machine, Serial Number, Model, Location</p>
+                        }
+                    </div>
+                    @if (_importing)
+                    {
+                        <p class="impexp-importing" role="status">
+                            <span class="impexp-spinner" aria-hidden="true"></span>
+                            Importing…
+                        </p>
+                    }
+                </div>
+                <div class="impexp-drop-zone">
+                    <InputFile id="impexp-file-input" OnChange="OnFile" accept=".xlsx,.csv" disabled="@_importing" />
+                    <div class="impexp-drop-content">
+                        <div class="impexp-drop-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                        </div>
+                        <p class="impexp-drop-title">Drag &amp; drop your file here or <span class="impexp-drop-link">click to browse</span></p>
+                        <p class="impexp-drop-hint">Supported formats: .xlsx, .csv</p>
+                    </div>
+                </div>
+            </div>
+        </article>
     }
-}
+</div>

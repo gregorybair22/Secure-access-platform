@@ -83,8 +83,17 @@ public class ChangeHistoryRow
     public string? Reason { get; set; }
 }
 
+public class ReportListStats
+{
+    public int TotalLogs { get; set; }
+    public int LogsThisMonth { get; set; }
+    public int UniqueUsers { get; set; }
+    public int UniqueMachines { get; set; }
+}
+
 public interface IReportService
 {
+    Task<ReportListStats> GetListStatsAsync(CancellationToken ct = default);
     Task<IReadOnlyList<CredentialAccessRow>> CredentialAccessAsync(ReportFilter filter, CancellationToken ct = default);
     Task<IReadOnlyList<TechnicianActivityRow>> TechnicianActivityAsync(ReportFilter filter, CancellationToken ct = default);
     Task<IReadOnlyList<CustomerAccessRow>> CustomerAccessAsync(ReportFilter filter, CancellationToken ct = default);

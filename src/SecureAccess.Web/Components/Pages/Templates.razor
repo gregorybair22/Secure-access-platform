@@ -1,50 +1,275 @@
 @page "/templates"
 @attribute [Authorize(Policy = "perm:templates.manage")]
 @rendermode InteractiveServer
-@inject SecureAccess.Application.Features.Templates.ITemplateService TemplateSvc
-@inject SecureAccess.Application.Features.Credentials.ICredentialTypeService TypeSvc
-@inject SecureAccess.Application.Features.Machines.IMachineService MachineSvc
+@using SecureAccess.Application.Features.Templates
+@using SecureAccess.Application.Features.Credentials
+@using SecureAccess.Application.Features.Machines
+@using SecureAccess.Application.Common
+@inject ITemplateService TemplateSvc
+@inject ICredentialTypeService TypeSvc
+@inject IMachineService MachineSvc
 
-<PageTitle>Templates - Secure Access</PageTitle>
+<PageTitle>Credential Templates - Secure Access</PageTitle>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Credential Templates</h1>
-    <button class="btn btn-primary" @onclick="StartNew">New Template</button>
+<div class="templates-page">
+    @if (!string.IsNullOrEmpty(_message))
+    {
+        <div class="templates-page-success" role="status">@_message</div>
+    }
+    @if (!string.IsNullOrEmpty(_error) && _editing is null && _deleteTarget is null && _applying is null)
+    {
+        <div class="templates-page-alert" role="alert">@_error</div>
+    }
+
+    <header class="templates-page-header">
+        <div class="templates-page-title-block">
+            <div class="templates-page-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+            </div>
+            <div>
+                <h1>Credential Templates</h1>
+                <p class="templates-page-subtitle">Create and manage templates to standardize credential requests across your organization.</p>
+            </div>
+        </div>
+        <button type="button" class="templates-btn-primary" @onclick="StartNew">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            New Template
+        </button>
+    </header>
+
+    <div class="templates-stats">
+        <article class="templates-stat-card">
+            <div class="templates-stat-icon templates-stat-icon-total" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                </svg>
+            </div>
+            <div>
+                <p class="templates-stat-label">Total Templates</p>
+                <p class="templates-stat-value">@Stats.Total</p>
+                <p class="templates-stat-hint">All templates</p>
+            </div>
+        </article>
+        <article class="templates-stat-card">
+            <div class="templates-stat-icon templates-stat-icon-active" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+            </div>
+            <div>
+                <p class="templates-stat-label">Active Templates</p>
+                <p class="templates-stat-value">@Stats.Active</p>
+                <p class="templates-stat-hint">Currently active</p>
+            </div>
+        </article>
+        <article class="templates-stat-card">
+            <div class="templates-stat-icon templates-stat-icon-inactive" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="10" y1="15" x2="10" y2="9"/>
+                    <line x1="14" y1="15" x2="14" y2="9"/>
+                </svg>
+            </div>
+            <div>
+                <p class="templates-stat-label">Inactive Templates</p>
+                <p class="templates-stat-value">@Stats.Inactive</p>
+                <p class="templates-stat-hint">Not in use</p>
+            </div>
+        </article>
+        <article class="templates-stat-card">
+            <div class="templates-stat-icon templates-stat-icon-categories" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                </svg>
+            </div>
+            <div>
+                <p class="templates-stat-label">Categories</p>
+                <p class="templates-stat-value">@Stats.Categories</p>
+                <p class="templates-stat-hint">Credential types used</p>
+            </div>
+        </article>
+    </div>
+
+    <div class="templates-card">
+        <div class="templates-card-tabs">
+            <div class="templates-status-tabs" role="tablist" aria-label="Template status">
+                <button type="button" role="tab" class="templates-status-tab @(_statusTab == "" ? "active" : null)" @onclick='() => SetStatusTab("")'>All Templates</button>
+                <button type="button" role="tab" class="templates-status-tab @(_statusTab == "active" ? "active" : null)" @onclick='() => SetStatusTab("active")'>Active</button>
+                <button type="button" role="tab" class="templates-status-tab @(_statusTab == "inactive" ? "active" : null)" @onclick='() => SetStatusTab("inactive")'>Inactive</button>
+            </div>
+            <div class="templates-toolbar">
+                <div class="templates-toolbar-search">
+                    <svg class="templates-toolbar-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="search" placeholder="Search templates..." @bind="_search" @bind:event="oninput" @bind:after="ResetPage" />
+                </div>
+                <button type="button" class="templates-btn-outline" title="Filters">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                    </svg>
+                    Filter
+                </button>
+            </div>
+        </div>
+
+        @if (PagedItems.Count == 0)
+        {
+            <div class="templates-empty-state">
+                <div class="templates-empty-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <circle cx="11" cy="11" r="3"/>
+                    </svg>
+                </div>
+                <h2>No templates found</h2>
+                <p>Get started by creating your first credential template.</p>
+                <button type="button" class="templates-btn-primary" @onclick="StartNew">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    New Template
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="templates-table-wrap">
+                <table class="templates-table">
+                    <thead>
+                        <tr>
+                            <th class="text-center"><button type="button" class="templates-th-sort @SortClass("name")" @onclick='() => SortBy("name")'>Name @SortIcon</button></th>
+                            <th class="text-center"><button type="button" class="templates-th-sort @SortClass("type")" @onclick='() => SortBy("type")'>Type @SortIcon</button></th>
+                            <th class="text-center"><button type="button" class="templates-th-sort @SortClass("description")" @onclick='() => SortBy("description")'>Description @SortIcon</button></th>
+                            <th class="text-center"><button type="button" class="templates-th-sort @SortClass("status")" @onclick='() => SortBy("status")'>Status @SortIcon</button></th>
+                            <th class="text-center"><button type="button" class="templates-th-sort @SortClass("created")" @onclick='() => SortBy("created")'>Created At @SortIcon</button></th>
+                            <th class="text-center templates-th-actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var t in PagedItems)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    <div class="templates-name-cell">
+                                        <span class="templates-row-icon" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                                <polyline points="14 2 14 8 20 8"/>
+                                            </svg>
+                                        </span>
+                                        <span class="templates-name">@t.Name</span>
+                                    </div>
+                                </td>
+                                <td class="text-center">@t.CredentialTypeName</td>
+                                <td class="text-center templates-desc-cell">@(string.IsNullOrWhiteSpace(t.Description) ? "—" : t.Description)</td>
+                                <td class="text-center">
+                                    <span class="templates-status-badge @(t.IsActive ? "templates-status-active" : "templates-status-inactive")">
+                                        @(t.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td class="templates-date-cell text-center">@FormatDate(t.CreatedAtUtc)</td>
+                                <td class="text-center">
+                                    <div class="templates-actions">
+                                        <button type="button" class="templates-btn-apply" @onclick="() => StartApply(t)">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                <polyline points="20 6 9 17 4 12"/>
+                                            </svg>
+                                            Apply
+                                        </button>
+                                        <button type="button" class="templates-btn-edit" @onclick="() => Edit(t)">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                            </svg>
+                                            Edit
+                                        </button>
+                                        <button type="button" class="templates-btn-delete" @onclick="() => OpenDeleteConfirm(t)">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                                <line x1="10" y1="11" x2="10" y2="17"/>
+                                                <line x1="14" y1="11" x2="14" y2="17"/>
+                                            </svg>
+                                            Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <footer class="templates-footer">
+            <span>Showing @RangeStart to @RangeEnd of @FilteredCount templates</span>
+            <div class="templates-footer-right">
+                <label class="templates-page-size">
+                    Rows per page:
+                    <select @bind="_pageSize" @bind:after="OnPageSizeChanged">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                </label>
+                <div class="templates-pagination">
+                    <button type="button" disabled="@(_page <= 1)" @onclick="FirstPage" aria-label="First page">«</button>
+                    <button type="button" disabled="@(_page <= 1)" @onclick="PrevPage" aria-label="Previous page">‹</button>
+                    @for (var p = 1; p <= TotalPages; p++)
+                    {
+                        var pageNum = p;
+                        <button type="button" class="@(_page == pageNum ? "active" : null)" @onclick="() => GoToPage(pageNum)">@pageNum</button>
+                    }
+                    <button type="button" disabled="@(_page >= TotalPages)" @onclick="NextPage" aria-label="Next page">›</button>
+                    <button type="button" disabled="@(_page >= TotalPages)" @onclick="LastPage" aria-label="Last page">»</button>
+                </div>
+            </div>
+        </footer>
+    </div>
 </div>
 
-@if (!string.IsNullOrEmpty(_message)) { <div class="alert alert-info py-2">@_message</div> }
-@if (!string.IsNullOrEmpty(_error)) { <div class="alert alert-danger py-2">@_error</div> }
-
-@if (_editing is not null)
+@if (_deleteTarget is not null)
 {
-    <div class="card mb-3">
-        <div class="card-header">@(_editingId == 0 ? "New Template" : "Edit Template")</div>
-        <div class="card-body">
-            <div class="row g-2 mb-2">
-                <div class="col-md-4"><label class="form-label">Name *</label><input class="form-control" @bind="_editing.Name" /></div>
-                <div class="col-md-4"><label class="form-label">Type *</label>
-                    <select class="form-select" @bind="_editing.CredentialTypeId" @bind:after="OnTypeChanged" disabled="@(_editingId != 0)">
-                        <option value="0">-- select --</option>
-                        @foreach (var t in _types) { <option value="@t.Id">@t.Name</option> }
-                    </select>
+    <div class="sa-modal-backdrop templates-modal-backdrop @(_deleteModalClosing ? "is-closing" : null)" @onclick="CloseDeleteModalAsync">
+        <div class="sa-modal-panel templates-modal templates-modal-confirm" role="alertdialog" aria-modal="true" aria-labelledby="templates-delete-title" @onclick:stopPropagation="true">
+            <div class="templates-modal-header templates-modal-header-danger">
+                <div class="templates-delete-header-main">
+                    <div class="templates-delete-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 id="templates-delete-title">Delete template</h2>
+                        <p class="templates-modal-subtitle">This action cannot be undone.</p>
+                    </div>
                 </div>
-                <div class="col-md-4"><label class="form-label">Description</label><input class="form-control" @bind="_editing.Description" /></div>
+                <button type="button" class="templates-modal-close" aria-label="Close" @onclick="CloseDeleteModalAsync">×</button>
             </div>
-            @if (_selectedType is not null)
-            {
-                <div class="row g-2">
-                    @foreach (var f in _selectedType.Fields)
-                    {
-                        <div class="col-md-6">
-                            <label class="form-label">@f.Label</label>
-                            <input class="form-control" @bind="_values[f.Key]" />
-                        </div>
-                    }
-                </div>
-            }
-            <div class="mt-3">
-                <button class="btn btn-success" @onclick="Save">Save</button>
-                <button class="btn btn-secondary" @onclick="() => _editing = null">Cancel</button>
+            <div class="templates-modal-body">
+                @if (!string.IsNullOrEmpty(_deleteError))
+                {
+                    <div class="templates-modal-alert" role="alert">@_deleteError</div>
+                }
+                <p class="templates-delete-message">
+                    Are you sure you want to delete <strong>@_deleteTarget.Name</strong>?
+                </p>
+            </div>
+            <div class="templates-modal-footer">
+                <button type="button" class="templates-btn-secondary" @onclick="CloseDeleteModalAsync">Cancel</button>
+                <button type="button" class="templates-btn-danger" @onclick="ConfirmDeleteAsync">Delete template</button>
             </div>
         </div>
     </div>
@@ -52,55 +277,194 @@
 
 @if (_applying is not null)
 {
-    <div class="card mb-3 border-primary">
-        <div class="card-header">Apply Template: @_applying.Name</div>
-        <div class="card-body">
-            <label class="form-label">Target Machines</label>
-            <select class="form-select mb-2" multiple size="6" @onchange="OnMachineSelect">
-                @foreach (var m in _machines) { <option value="@m.Id">@m.ClientName / @m.Name</option> }
-            </select>
-            <div class="form-check"><input class="form-check-input" type="checkbox" @bind="_fillEmpty" id="fe" /><label class="form-check-label" for="fe">Fill empty fields only</label></div>
-            <div class="form-check"><input class="form-check-input" type="checkbox" @bind="_overwrite" id="ow" /><label class="form-check-label" for="ow">Overwrite existing values</label></div>
-            <div class="mt-2">
-                <button class="btn btn-primary" @onclick="ApplyConfirmed">Apply to @_selectedMachineIds.Count machine(s)</button>
-                <button class="btn btn-secondary" @onclick="() => _applying = null">Cancel</button>
+    <div class="sa-modal-backdrop templates-modal-backdrop @(_applyModalClosing ? "is-closing" : null)" @onclick="CloseApplyModalAsync">
+        <div class="sa-modal-panel templates-modal" role="dialog" aria-modal="true" aria-labelledby="templates-apply-title" @onclick:stopPropagation="true">
+            <div class="templates-modal-header">
+                <div>
+                    <h2 id="templates-apply-title">Apply Template</h2>
+                    <p class="templates-apply-subtitle">@_applying.Name · @_applying.CredentialTypeName</p>
+                </div>
+                <button type="button" class="templates-modal-close" aria-label="Close" @onclick="CloseApplyModalAsync">×</button>
+            </div>
+            <div class="templates-modal-body">
+                @if (!string.IsNullOrEmpty(_error))
+                {
+                    <div class="templates-modal-alert" role="alert">@_error</div>
+                }
+                <label class="form-label">Target machines</label>
+                <select class="form-select templates-machine-select" multiple size="8" @onchange="OnMachineSelect">
+                    @foreach (var m in _machines)
+                    {
+                        <option value="@m.Id">@m.ClientName / @m.Name</option>
+                    }
+                </select>
+                <p class="templates-apply-hint">Hold Ctrl (or Cmd) to select multiple machines.</p>
+                <div class="templates-apply-options">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" @bind="_fillEmpty" id="template-fill-empty" />
+                        <label class="form-check-label" for="template-fill-empty">Fill empty fields only</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" @bind="_overwrite" id="template-overwrite" />
+                        <label class="form-check-label" for="template-overwrite">Overwrite existing values</label>
+                    </div>
+                </div>
+            </div>
+            <div class="templates-modal-footer">
+                <button type="button" class="templates-btn-secondary" @onclick="CloseApplyModalAsync">Cancel</button>
+                <button type="button" class="templates-btn-primary" @onclick="ApplyConfirmed" disabled="@(_selectedMachineIds.Count == 0)">
+                    Apply to @_selectedMachineIds.Count machine(s)
+                </button>
             </div>
         </div>
     </div>
 }
 
-<table class="table table-striped">
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th><th></th></tr></thead>
-    <tbody>
-        @foreach (var t in _items)
-        {
-            <tr>
-                <td>@t.Name</td><td>@t.CredentialTypeName</td><td>@t.Description</td>
-                <td class="text-end">
-                    <button class="btn btn-sm btn-outline-success" @onclick="() => StartApply(t)">Apply</button>
-                    <button class="btn btn-sm btn-outline-primary ms-1" @onclick="() => Edit(t)">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger ms-1" @onclick="() => Delete(t.Id)">Delete</button>
-                </td>
-            </tr>
-        }
-        @if (_items.Count == 0) { <tr><td colspan="4" class="text-muted">No templates.</td></tr> }
-    </tbody>
-</table>
+@if (_editing is not null)
+{
+    <div class="sa-modal-backdrop templates-modal-backdrop @(_editModalClosing ? "is-closing" : null)" @onclick="CloseEditModalAsync">
+        <div class="sa-modal-panel templates-modal templates-modal-wide" role="dialog" aria-modal="true" aria-labelledby="templates-modal-title" @onclick:stopPropagation="true">
+            <div class="templates-modal-header">
+                <h2 id="templates-modal-title">@(_editingId == 0 ? "New Template" : "Edit Template")</h2>
+                <button type="button" class="templates-modal-close" aria-label="Close" @onclick="CloseEditModalAsync">×</button>
+            </div>
+            <div class="templates-modal-body">
+                @if (!string.IsNullOrEmpty(_error))
+                {
+                    <div class="templates-modal-alert" role="alert">@_error</div>
+                }
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Name *</label>
+                        <input class="form-control" @bind="_editing.Name" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Type *</label>
+                        <select class="form-select" @bind="_editing.CredentialTypeId" @bind:after="OnTypeChanged" disabled="@(_editingId != 0)">
+                            <option value="0">-- select --</option>
+                            @foreach (var t in _types)
+                            {
+                                <option value="@t.Id">@t.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Description</label>
+                        <input class="form-control" @bind="_editing.Description" />
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" @bind="_editing.IsActive" id="template-active" />
+                            <label class="form-check-label" for="template-active">Active</label>
+                        </div>
+                    </div>
+                </div>
+                @if (_selectedType is not null)
+                {
+                    <h3 class="templates-fields-heading">Default field values</h3>
+                    <div class="row g-3">
+                        @foreach (var f in _selectedType.Fields.OrderBy(x => x.Order))
+                        {
+                            <div class="col-md-6">
+                                <label class="form-label">@f.Label</label>
+                                <input class="form-control" @bind="_values[f.Key]" />
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+            <div class="templates-modal-footer">
+                <div class="templates-modal-footer-actions">
+                    <button type="button" class="templates-btn-secondary" @onclick="CloseEditModalAsync">Cancel</button>
+                    <button type="button" class="templates-btn-primary" @onclick="Save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
-    private List<SecureAccess.Application.Features.Templates.TemplateDto> _items = new();
-    private List<SecureAccess.Application.Features.Credentials.CredentialTypeDto> _types = new();
-    private List<SecureAccess.Application.Features.Machines.MachineDto> _machines = new();
+    private List<TemplateDto> _items = new();
+    private List<CredentialTypeDto> _types = new();
+    private List<MachineDto> _machines = new();
 
-    private SecureAccess.Application.Features.Templates.SaveTemplateRequest? _editing;
+    private SaveTemplateRequest? _editing;
+    private bool _editModalClosing;
+    private bool _deleteModalClosing;
+    private bool _applyModalClosing;
     private int _editingId;
-    private SecureAccess.Application.Features.Credentials.CredentialTypeDto? _selectedType;
+    private CredentialTypeDto? _selectedType;
     private Dictionary<string, string?> _values = new();
 
-    private SecureAccess.Application.Features.Templates.TemplateDto? _applying;
+    private TemplateDto? _applying;
+    private TemplateDto? _deleteTarget;
     private readonly List<int> _selectedMachineIds = new();
-    private bool _fillEmpty, _overwrite;
-    private string? _message, _error;
+    private bool _fillEmpty;
+    private bool _overwrite;
+    private string? _message;
+    private string? _error;
+    private string? _deleteError;
+
+    private string _search = "";
+    private string _statusTab = "";
+    private string _sortColumn = "name";
+    private bool _sortAsc = true;
+    private int _page = 1;
+    private int _pageSize = 10;
+
+    private TemplateStats Stats => new()
+    {
+        Total = _items.Count,
+        Active = _items.Count(t => t.IsActive),
+        Inactive = _items.Count(t => !t.IsActive),
+        Categories = _items.Select(t => t.CredentialTypeId).Distinct().Count()
+    };
+
+    private MarkupString SortIcon => new(
+        "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\">" +
+        "<path d=\"m7 15 5 5 5-5\"/><path d=\"m7 9 5-4 5 4\"/></svg>");
+
+    private IEnumerable<TemplateDto> FilteredItems
+    {
+        get
+        {
+            IEnumerable<TemplateDto> q = _items;
+
+            if (!string.IsNullOrWhiteSpace(_search))
+            {
+                var term = _search.Trim();
+                q = q.Where(t =>
+                    t.Name.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                    t.CredentialTypeName.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                    (t.Description?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false));
+            }
+
+            q = _statusTab switch
+            {
+                "active" => q.Where(t => t.IsActive),
+                "inactive" => q.Where(t => !t.IsActive),
+                _ => q
+            };
+
+            q = _sortColumn switch
+            {
+                "type" => _sortAsc ? q.OrderBy(t => t.CredentialTypeName) : q.OrderByDescending(t => t.CredentialTypeName),
+                "description" => _sortAsc ? q.OrderBy(t => t.Description) : q.OrderByDescending(t => t.Description),
+                "status" => _sortAsc ? q.OrderBy(t => t.IsActive) : q.OrderByDescending(t => t.IsActive),
+                "created" => _sortAsc ? q.OrderBy(t => t.CreatedAtUtc) : q.OrderByDescending(t => t.CreatedAtUtc),
+                _ => _sortAsc ? q.OrderBy(t => t.Name) : q.OrderByDescending(t => t.Name)
+            };
+
+            return q;
+        }
+    }
+
+    private int FilteredCount => FilteredItems.Count();
+    private int TotalPages => Math.Max(1, (int)Math.Ceiling(FilteredCount / (double)_pageSize));
+    private List<TemplateDto> PagedItems =>
+        FilteredItems.Skip((_page - 1) * _pageSize).Take(_pageSize).ToList();
+    private int RangeStart => FilteredCount == 0 ? 0 : (_page - 1) * _pageSize + 1;
+    private int RangeEnd => Math.Min(_page * _pageSize, FilteredCount);
 
     protected override async Task OnInitializedAsync()
     {
@@ -109,61 +473,207 @@
         await Reload();
     }
 
-    private async Task Reload() => _items = (await TemplateSvc.GetTemplatesAsync()).ToList();
+    private async Task Reload()
+    {
+        _items = (await TemplateSvc.GetTemplatesAsync()).ToList();
+        if (_page > TotalPages) _page = TotalPages;
+    }
 
-    private void StartNew() { _editingId = 0; _editing = new(); _selectedType = null; _values = new(); }
+    private void SetStatusTab(string tab)
+    {
+        _statusTab = tab;
+        ResetPage();
+    }
+
+    private void StartNew()
+    {
+        _error = null;
+        _editingId = 0;
+        _editing = new SaveTemplateRequest { IsActive = true };
+        _selectedType = null;
+        _values = new();
+    }
 
     private void OnTypeChanged()
     {
         _selectedType = _types.FirstOrDefault(t => t.Id == _editing!.CredentialTypeId);
         _values = new();
-        if (_selectedType is not null) foreach (var f in _selectedType.Fields) _values[f.Key] = null;
+        if (_selectedType is not null)
+            foreach (var f in _selectedType.Fields)
+                _values[f.Key] = null;
     }
 
-    private void Edit(SecureAccess.Application.Features.Templates.TemplateDto t)
+    private void Edit(TemplateDto t)
     {
+        _error = null;
         _editingId = t.Id;
-        _editing = new() { CredentialTypeId = t.CredentialTypeId, Name = t.Name, Description = t.Description, IsActive = t.IsActive };
+        _editing = new SaveTemplateRequest
+        {
+            CredentialTypeId = t.CredentialTypeId,
+            Name = t.Name,
+            Description = t.Description,
+            IsActive = t.IsActive
+        };
         _selectedType = _types.FirstOrDefault(x => x.Id == t.CredentialTypeId);
         _values = new();
         if (_selectedType is not null)
-            foreach (var f in _selectedType.Fields) _values[f.Key] = t.PlainValues.TryGetValue(f.Key, out var v) ? v : null;
+            foreach (var f in _selectedType.Fields)
+                _values[f.Key] = t.PlainValues.TryGetValue(f.Key, out var v) ? v : null;
     }
 
-    private async Task Save()
+    private void OpenDeleteConfirm(TemplateDto t)
     {
-        _editing!.Values = _values;
-        var result = _editingId == 0 ? (Result)await TemplateSvc.CreateAsync(_editing) : await TemplateSvc.UpdateAsync(_editingId, _editing);
-        if (!result.Succeeded) { _error = result.Error; return; }
-        _editing = null; _error = null;
-        await Reload();
+        _deleteTarget = t;
+        _deleteError = null;
     }
 
-    private async Task Delete(int id) { await TemplateSvc.DeleteAsync(id); await Reload(); }
-
-    private void StartApply(SecureAccess.Application.Features.Templates.TemplateDto t)
+    private Task CloseEditModalAsync()
     {
-        _applying = t; _selectedMachineIds.Clear(); _fillEmpty = false; _overwrite = false; _message = null;
+        if (_editing is null || _editModalClosing) return Task.CompletedTask;
+        return ModalAnimation.CloseAsync(
+            () => _editModalClosing,
+            v => _editModalClosing = v,
+            () => _editing = null,
+            StateHasChanged);
+    }
+
+    private Task CloseDeleteModalAsync()
+    {
+        if (_deleteTarget is null || _deleteModalClosing) return Task.CompletedTask;
+        return ModalAnimation.CloseAsync(
+            () => _deleteModalClosing,
+            v => _deleteModalClosing = v,
+            () => _deleteTarget = null,
+            StateHasChanged);
+    }
+
+    private void StartApply(TemplateDto t)
+    {
+        _applying = t;
+        _selectedMachineIds.Clear();
+        _fillEmpty = false;
+        _overwrite = false;
+        _error = null;
+    }
+
+    private Task CloseApplyModalAsync()
+    {
+        if (_applying is null || _applyModalClosing) return Task.CompletedTask;
+        return ModalAnimation.CloseAsync(
+            () => _applyModalClosing,
+            v => _applyModalClosing = v,
+            () => _applying = null,
+            StateHasChanged);
     }
 
     private void OnMachineSelect(ChangeEventArgs e)
     {
         _selectedMachineIds.Clear();
         if (e.Value is string[] vals)
-            foreach (var v in vals) if (int.TryParse(v, out var id)) _selectedMachineIds.Add(id);
+            foreach (var v in vals)
+                if (int.TryParse(v, out var id))
+                    _selectedMachineIds.Add(id);
+    }
+
+    private void SortBy(string column)
+    {
+        if (_sortColumn == column)
+            _sortAsc = !_sortAsc;
+        else
+        {
+            _sortColumn = column;
+            _sortAsc = true;
+        }
+        _page = 1;
+    }
+
+    private string SortClass(string column) => _sortColumn == column ? "active" : "";
+
+    private static string FormatDate(DateTime utc) =>
+        utc.ToLocalTime().ToString("MMM d, yyyy");
+
+    private void ResetPage() => _page = 1;
+
+    private void OnPageSizeChanged()
+    {
+        _page = 1;
+        if (_page > TotalPages) _page = TotalPages;
+    }
+
+    private void FirstPage() => _page = 1;
+    private void PrevPage() { if (_page > 1) _page--; }
+    private void NextPage() { if (_page < TotalPages) _page++; }
+    private void LastPage() => _page = TotalPages;
+    private void GoToPage(int p) => _page = p;
+
+    private async Task ConfirmDeleteAsync()
+    {
+        if (_deleteTarget is null) return;
+
+        _deleteError = null;
+        var result = await TemplateSvc.DeleteAsync(_deleteTarget.Id);
+        if (!result.Succeeded)
+        {
+            _deleteError = result.Error;
+            return;
+        }
+
+        if (_editingId == _deleteTarget.Id)
+            _editing = null;
+
+        await CloseDeleteModalAsync();
+        _message = null;
+        await Reload();
+    }
+
+    private async Task Save()
+    {
+        _editing!.Values = _values;
+        Result result;
+        if (_editingId == 0)
+            result = await TemplateSvc.CreateAsync(_editing);
+        else
+            result = await TemplateSvc.UpdateAsync(_editingId, _editing);
+
+        if (!result.Succeeded)
+        {
+            _error = result.Error;
+            return;
+        }
+
+        _error = null;
+        await CloseEditModalAsync();
+        await Reload();
     }
 
     private async Task ApplyConfirmed()
     {
-        var result = await TemplateSvc.ApplyToMachinesAsync(new()
+        if (_applying is null) return;
+
+        _error = null;
+        var result = await TemplateSvc.ApplyToMachinesAsync(new ApplyTemplateRequest
         {
-            TemplateId = _applying!.Id,
+            TemplateId = _applying.Id,
             MachineIds = _selectedMachineIds,
             FillEmptyOnly = _fillEmpty,
             Overwrite = _overwrite
         });
-        if (!result.Succeeded) { _error = result.Error; return; }
+
+        if (!result.Succeeded)
+        {
+            _error = result.Error;
+            return;
+        }
+
         _message = $"Template applied to {result.Value} machine(s).";
-        _applying = null;
+        await CloseApplyModalAsync();
+    }
+
+    private sealed class TemplateStats
+    {
+        public int Total { get; set; }
+        public int Active { get; set; }
+        public int Inactive { get; set; }
+        public int Categories { get; set; }
     }
 }

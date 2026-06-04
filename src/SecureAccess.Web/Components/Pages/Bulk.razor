@@ -1,65 +1,214 @@
 @page "/bulk"
 @attribute [Authorize(Policy = "perm:bulk.operations")]
 @rendermode InteractiveServer
-@inject SecureAccess.Application.Features.Bulk.IBulkService BulkSvc
-@inject SecureAccess.Application.Features.Machines.IMachineService MachineSvc
-@inject SecureAccess.Application.Features.Clients.IClientService ClientSvc
+@using SecureAccess.Application.Features.Bulk
+@using SecureAccess.Application.Features.Machines
+@using SecureAccess.Application.Features.Clients
+@inject IBulkService BulkSvc
+@inject IMachineService MachineSvc
+@inject IClientService ClientSvc
 
 <PageTitle>Bulk Operations - Secure Access</PageTitle>
 
-<h1>Bulk Operations</h1>
-@if (!string.IsNullOrEmpty(_message)) { <div class="alert alert-success">@_message</div> }
-@if (!string.IsNullOrEmpty(_error)) { <div class="alert alert-danger">@_error</div> }
+<div class="bulk-page">
+    @if (!string.IsNullOrEmpty(_message))
+    {
+        <div class="bulk-page-success" role="status">@_message</div>
+    }
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <div class="bulk-page-alert" role="alert">@_error</div>
+    }
 
-<div class="card mb-3">
-    <div class="card-header">Copy Credentials: Machine → Machines</div>
-    <div class="card-body">
-        <div class="row g-2">
-            <div class="col-md-6"><label class="form-label">Source machine</label>
-                <select class="form-select" @bind="_srcMachine">
-                    <option value="0">-- select --</option>
-                    @foreach (var m in _machines) { <option value="@m.Id">@m.ClientName / @m.Name</option> }
-                </select>
+    <header class="bulk-page-header">
+        <div class="bulk-page-title-block">
+            <div class="bulk-page-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="8" y="2" width="8" height="4" rx="1"/>
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                    <rect x="8" y="10" width="8" height="10" rx="1"/>
+                </svg>
             </div>
-            <div class="col-md-6"><label class="form-label">Target machines</label>
-                <select class="form-select" multiple size="5" @onchange="e => _tgtMachines = ToIds(e)">
-                    @foreach (var m in _machines) { <option value="@m.Id">@m.ClientName / @m.Name</option> }
-                </select>
+            <div>
+                <h1>
+                    Bulk Operations
+                    <span class="bulk-page-info" title="Copy credentials in bulk between machines or clients. Changes are audited.">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="16" x2="12" y2="12"/>
+                            <line x1="12" y1="8" x2="12.01" y2="8"/>
+                        </svg>
+                    </span>
+                </h1>
+                <p class="bulk-page-subtitle">Perform bulk actions to copy credentials, machines, or clients quickly and accurately.</p>
             </div>
         </div>
-        @Options(v => _mFill = v, v => _mOver = v, _mFill, _mOver, "m")
-        <button class="btn btn-primary mt-2" @onclick="CopyMachines">Copy</button>
-    </div>
-</div>
+    </header>
 
-<div class="card mb-3">
-    <div class="card-header">Copy Credentials: Client → Clients</div>
-    <div class="card-body">
-        <div class="row g-2">
-            <div class="col-md-6"><label class="form-label">Source client</label>
-                <select class="form-select" @bind="_srcClient">
-                    <option value="0">-- select --</option>
-                    @foreach (var c in _clients) { <option value="@c.Id">@c.Name</option> }
-                </select>
+    <div class="bulk-operations">
+        <article class="bulk-op-card bulk-op-card-machines">
+            <div class="bulk-op-card-header">
+                <div class="bulk-op-card-icon bulk-op-card-icon-machines" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="8" rx="2"/>
+                        <rect x="2" y="14" width="20" height="8" rx="2"/>
+                        <line x1="6" y1="6" x2="6.01" y2="6"/>
+                        <line x1="6" y1="18" x2="6.01" y2="18"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2>Copy Credentials: Machines → Machines</h2>
+                    <p>Copy credentials from one machine to multiple target machines.</p>
+                </div>
             </div>
-            <div class="col-md-6"><label class="form-label">Target clients</label>
-                <select class="form-select" multiple size="5" @onchange="e => _tgtClients = ToIds(e)">
-                    @foreach (var c in _clients) { <option value="@c.Id">@c.Name</option> }
-                </select>
+            <div class="bulk-op-card-body">
+                <div class="bulk-op-form-grid">
+                    <div class="bulk-op-field">
+                        <label for="bulk-src-machine">Source Machine</label>
+                        <select id="bulk-src-machine" class="bulk-select" @bind="_srcMachine" @bind:after="OnSourceMachineChanged">
+                            <option value="0">Select source machine</option>
+                            @foreach (var m in _machines)
+                            {
+                                <option value="@m.Id">@m.ClientName / @m.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="bulk-op-field">
+                        <label for="bulk-tgt-machines">Target Machines</label>
+                        <select id="bulk-tgt-machines" class="bulk-select bulk-select-multi" multiple @onchange="OnTargetMachinesChanged">
+                            @foreach (var m in _machines.Where(x => x.Id != _srcMachine))
+                            {
+                                <option value="@m.Id" selected="@_tgtMachines.Contains(m.Id)">@m.ClientName / @m.Name</option>
+                            }
+                        </select>
+                        <p class="bulk-op-hint">Hold Ctrl (or Cmd) to select multiple.</p>
+                    </div>
+                </div>
+                <div class="bulk-op-options">
+                    <div class="bulk-option">
+                        <input class="form-check-input" type="checkbox" @bind="_mFill" id="bulk-m-fill" />
+                        <label for="bulk-m-fill">
+                            <span class="bulk-option-title">Fill empty fields only</span>
+                            <span class="bulk-option-desc">Only copy fields that are empty in target machines.</span>
+                        </label>
+                    </div>
+                    <div class="bulk-option">
+                        <input class="form-check-input" type="checkbox" @bind="_mOver" id="bulk-m-over" />
+                        <label for="bulk-m-over">
+                            <span class="bulk-option-title">Overwrite existing values</span>
+                            <span class="bulk-option-desc">Replace existing values in target machines.</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="bulk-op-actions">
+                    <button type="button" class="bulk-btn-copy bulk-btn-copy-machines" disabled="@_busy" @onclick="CopyMachines">
+                        @if (_busy && _busyOp == "machines")
+                        {
+                            <span class="bulk-btn-spinner" aria-hidden="true"></span>
+                        }
+                        else
+                        {
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                        }
+                        Copy Credentials
+                    </button>
+                </div>
             </div>
-        </div>
-        @Options(v => _cFill = v, v => _cOver = v, _cFill, _cOver, "c")
-        <button class="btn btn-primary mt-2" @onclick="CopyClients">Copy</button>
+        </article>
+
+        <article class="bulk-op-card bulk-op-card-clients">
+            <div class="bulk-op-card-header">
+                <div class="bulk-op-card-icon bulk-op-card-icon-clients" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2>Copy Credentials: Clients → Clients</h2>
+                    <p>Copy credentials from one client to multiple target clients.</p>
+                </div>
+            </div>
+            <div class="bulk-op-card-body">
+                <div class="bulk-op-form-grid">
+                    <div class="bulk-op-field">
+                        <label for="bulk-src-client">Source Client</label>
+                        <select id="bulk-src-client" class="bulk-select" @bind="_srcClient" @bind:after="OnSourceClientChanged">
+                            <option value="0">Select source client</option>
+                            @foreach (var c in _clients)
+                            {
+                                <option value="@c.Id">@c.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="bulk-op-field">
+                        <label for="bulk-tgt-clients">Target Clients</label>
+                        <select id="bulk-tgt-clients" class="bulk-select bulk-select-multi" multiple @onchange="OnTargetClientsChanged">
+                            @foreach (var c in _clients.Where(x => x.Id != _srcClient))
+                            {
+                                <option value="@c.Id" selected="@_tgtClients.Contains(c.Id)">@c.Name</option>
+                            }
+                        </select>
+                        <p class="bulk-op-hint">Hold Ctrl (or Cmd) to select multiple.</p>
+                    </div>
+                </div>
+                <div class="bulk-op-options">
+                    <div class="bulk-option">
+                        <input class="form-check-input" type="checkbox" @bind="_cFill" id="bulk-c-fill" />
+                        <label for="bulk-c-fill">
+                            <span class="bulk-option-title">Fill empty fields only</span>
+                            <span class="bulk-option-desc">Only copy fields that are empty in target clients.</span>
+                        </label>
+                    </div>
+                    <div class="bulk-option">
+                        <input class="form-check-input" type="checkbox" @bind="_cOver" id="bulk-c-over" />
+                        <label for="bulk-c-over">
+                            <span class="bulk-option-title">Overwrite existing values</span>
+                            <span class="bulk-option-desc">Replace existing values in target clients.</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="bulk-op-actions">
+                    <button type="button" class="bulk-btn-copy bulk-btn-copy-clients" disabled="@_busy" @onclick="CopyClients">
+                        @if (_busy && _busyOp == "clients")
+                        {
+                            <span class="bulk-btn-spinner" aria-hidden="true"></span>
+                        }
+                        else
+                        {
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                        }
+                        Copy Credentials
+                    </button>
+                </div>
+            </div>
+        </article>
     </div>
 </div>
 
 @code {
-    private List<SecureAccess.Application.Features.Machines.MachineDto> _machines = new();
-    private List<SecureAccess.Application.Features.Clients.ClientDto> _clients = new();
-    private int _srcMachine, _srcClient;
-    private List<int> _tgtMachines = new(), _tgtClients = new();
-    private bool _mFill, _mOver, _cFill, _cOver;
-    private string? _message, _error;
+    private List<MachineDto> _machines = new();
+    private List<ClientDto> _clients = new();
+    private int _srcMachine;
+    private int _srcClient;
+    private List<int> _tgtMachines = new();
+    private List<int> _tgtClients = new();
+    private bool _mFill;
+    private bool _mOver;
+    private bool _cFill;
+    private bool _cOver;
+    private string? _message;
+    private string? _error;
+    private bool _busy;
+    private string? _busyOp;
 
     protected override async Task OnInitializedAsync()
     {
@@ -67,32 +216,114 @@
         _clients = (await ClientSvc.GetClientsAsync(null, 1, 500)).Items.ToList();
     }
 
-    private static List<int> ToIds(ChangeEventArgs e)
-        => (e.Value as string[])?.Select(v => int.TryParse(v, out var i) ? i : 0).Where(i => i > 0).ToList() ?? new();
+    private void OnSourceMachineChanged() =>
+        _tgtMachines = _tgtMachines.Where(id => id != _srcMachine).ToList();
 
-    private RenderFragment Options(Action<bool> setFill, Action<bool> setOver, bool fill, bool over, string id) => __builder =>
-    {
-        <div class="form-check mt-2"><input class="form-check-input" type="checkbox" id="@(id)fill" checked="@fill" @onchange="e => setFill((bool)e.Value!)" /><label class="form-check-label" for="@(id)fill">Fill empty fields only</label></div>
-        <div class="form-check"><input class="form-check-input" type="checkbox" id="@(id)over" checked="@over" @onchange="e => setOver((bool)e.Value!)" /><label class="form-check-label" for="@(id)over">Overwrite existing values</label></div>
-    };
+    private void OnSourceClientChanged() =>
+        _tgtClients = _tgtClients.Where(id => id != _srcClient).ToList();
+
+    private void OnTargetMachinesChanged(ChangeEventArgs e) =>
+        _tgtMachines = ParseSelectedIds(e);
+
+    private void OnTargetClientsChanged(ChangeEventArgs e) =>
+        _tgtClients = ParseSelectedIds(e);
+
+    private static List<int> ParseSelectedIds(ChangeEventArgs e) =>
+        (e.Value as string[])?
+            .Select(v => int.TryParse(v, out var i) ? i : 0)
+            .Where(i => i > 0)
+            .Distinct()
+            .ToList() ?? new();
 
     private async Task CopyMachines()
     {
-        Clear();
-        if (_srcMachine == 0 || _tgtMachines.Count == 0) { _error = "Select a source and at least one target machine."; return; }
-        var r = await BulkSvc.CopyMachineToMachinesAsync(new() { SourceMachineId = _srcMachine, TargetMachineIds = _tgtMachines, FillEmptyOnly = _mFill, Overwrite = _mOver });
-        if (!r.Succeeded) { _error = r.Error; return; }
-        _message = $"Created {r.Value!.CreatedCredentials}, updated {r.Value.AffectedCredentials} credential(s).";
+        ClearAlerts();
+        if (_srcMachine == 0 || _tgtMachines.Count == 0)
+        {
+            _error = "Select a source machine and at least one target machine.";
+            return;
+        }
+
+        _tgtMachines = _tgtMachines.Where(id => id != _srcMachine).Distinct().ToList();
+        if (_tgtMachines.Count == 0)
+        {
+            _error = "Select at least one target machine other than the source.";
+            return;
+        }
+
+        _busy = true;
+        _busyOp = "machines";
+        try
+        {
+            var result = await BulkSvc.CopyMachineToMachinesAsync(new CopyMachineToMachinesRequest
+            {
+                SourceMachineId = _srcMachine,
+                TargetMachineIds = _tgtMachines,
+                FillEmptyOnly = _mFill,
+                Overwrite = _mOver
+            });
+
+            if (!result.Succeeded)
+            {
+                _error = result.Error;
+                return;
+            }
+
+            _message = $"Copy complete: created {result.Value!.CreatedCredentials}, updated {result.Value.AffectedCredentials} credential(s).";
+        }
+        finally
+        {
+            _busy = false;
+            _busyOp = null;
+        }
     }
 
     private async Task CopyClients()
     {
-        Clear();
-        if (_srcClient == 0 || _tgtClients.Count == 0) { _error = "Select a source and at least one target client."; return; }
-        var r = await BulkSvc.CopyClientToClientsAsync(new() { SourceClientId = _srcClient, TargetClientIds = _tgtClients, FillEmptyOnly = _cFill, Overwrite = _cOver });
-        if (!r.Succeeded) { _error = r.Error; return; }
-        _message = $"Created {r.Value!.CreatedCredentials}, updated {r.Value.AffectedCredentials} credential(s).";
+        ClearAlerts();
+        if (_srcClient == 0 || _tgtClients.Count == 0)
+        {
+            _error = "Select a source client and at least one target client.";
+            return;
+        }
+
+        _tgtClients = _tgtClients.Where(id => id != _srcClient).Distinct().ToList();
+        if (_tgtClients.Count == 0)
+        {
+            _error = "Select at least one target client other than the source.";
+            return;
+        }
+
+        _busy = true;
+        _busyOp = "clients";
+        try
+        {
+            var result = await BulkSvc.CopyClientToClientsAsync(new CopyClientToClientsRequest
+            {
+                SourceClientId = _srcClient,
+                TargetClientIds = _tgtClients,
+                FillEmptyOnly = _cFill,
+                Overwrite = _cOver
+            });
+
+            if (!result.Succeeded)
+            {
+                _error = result.Error;
+                return;
+            }
+
+            _message = $"Copy complete: created {result.Value!.CreatedCredentials}, updated {result.Value.AffectedCredentials} credential(s).";
+        }
+        finally
+        {
+            _busy = false;
+            _busyOp = null;
+        }
     }
 
-    private void Clear() { _message = null; _error = null; }
+    private void ClearAlerts()
+    {
+        _message = null;
+        _error = null;
+    }
 }

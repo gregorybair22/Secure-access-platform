@@ -154,6 +154,7 @@ public class TemplateService : ITemplateService
         Name = t.Name,
         Description = t.Description,
         IsActive = t.IsActive,
+        CreatedAtUtc = t.CreatedAtUtc,
         PlainValues = _protector.ReadPlain(t.PlainData)
     };
 }

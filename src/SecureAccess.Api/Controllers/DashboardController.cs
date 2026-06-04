@@ -16,5 +16,6 @@ public class DashboardController : ControllerBase
 
     [HttpGet]
     [HasPermission(Permissions.DashboardView)]
-    public async Task<IActionResult> Get(CancellationToken ct) => Ok(await _dashboard.GetAsync(ct));
+    public async Task<IActionResult> Get([FromQuery] DateTime? fromUtc, [FromQuery] DateTime? toUtc, CancellationToken ct)
+        => Ok(await _dashboard.GetAsync(fromUtc, toUtc, ct));
 }

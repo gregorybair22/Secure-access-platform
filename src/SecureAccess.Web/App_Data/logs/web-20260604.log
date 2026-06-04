@@ -437,3 +437,651 @@
 2026-06-04 02:23:57.837 -07:00 [INF] HTTP GET /credentials responded 200 in 9.2085 ms
 2026-06-04 02:24:34.214 -07:00 [INF] HTTP GET /credentials responded 200 in 9.0038 ms
 2026-06-04 02:24:51.914 -07:00 [INF] HTTP GET /credentials responded 200 in 3.2137 ms
+2026-06-04 02:26:22.902 -07:00 [INF] Now listening on: http://localhost:5005
+2026-06-04 02:26:22.916 -07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-06-04 02:26:22.917 -07:00 [INF] Hosting environment: Development
+2026-06-04 02:26:22.917 -07:00 [INF] Content root path: D:\La-Fabrica-de-Software\17 - Secure-access-platform\src\SecureAccess.Web
+2026-06-04 02:26:22.977 -07:00 [WRN] Failed to determine the https port for redirect.
+2026-06-04 02:26:23.057 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 4.2023 ms
+2026-06-04 02:26:23.095 -07:00 [INF] HTTP GET /credentials responded 200 in 119.4193 ms
+2026-06-04 02:26:23.103 -07:00 [INF] HTTP GET /_blazor responded 101 in 43.3823 ms
+2026-06-04 02:26:23.106 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 3.2415 ms
+2026-06-04 02:26:23.117 -07:00 [INF] HTTP GET /css/modal.css responded 304 in 1.2388 ms
+2026-06-04 02:26:23.117 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.5826 ms
+2026-06-04 02:26:23.119 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 200 in 4.1473 ms
+2026-06-04 02:26:23.144 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 1.1204 ms
+2026-06-04 02:26:23.149 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.5118 ms
+2026-06-04 02:26:24.381 -07:00 [INF] HTTP GET /credentials responded 200 in 11.5913 ms
+2026-06-04 02:26:24.388 -07:00 [INF] HTTP GET /_blazor responded 101 in 1232.8272 ms
+2026-06-04 02:26:24.397 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 1.1760 ms
+2026-06-04 02:26:24.399 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 304 in 0.1591 ms
+2026-06-04 02:26:24.400 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.3358 ms
+2026-06-04 02:26:24.418 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.6197 ms
+2026-06-04 02:26:24.427 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.3563 ms
+2026-06-04 02:26:59.359 -07:00 [INF] HTTP GET /credentials responded 200 in 13.6672 ms
+2026-06-04 02:26:59.543 -07:00 [INF] HTTP GET /credentials responded 200 in 7.9190 ms
+2026-06-04 02:27:25.815 -07:00 [INF] HTTP GET /credentials responded 200 in 15.5921 ms
+2026-06-04 02:27:25.934 -07:00 [INF] HTTP GET /credentials responded 200 in 8.0690 ms
+2026-06-04 02:27:39.347 -07:00 [INF] HTTP GET /credentials responded 200 in 4.5426 ms
+2026-06-04 02:28:32.122 -07:00 [INF] HTTP GET /credentials responded 200 in 10.4624 ms
+2026-06-04 02:28:46.008 -07:00 [INF] HTTP GET /credentials responded 200 in 4.1761 ms
+2026-06-04 02:28:46.258 -07:00 [INF] HTTP GET /credentials responded 200 in 4.1336 ms
+2026-06-04 02:29:04.563 -07:00 [INF] HTTP GET /machines responded 200 in 21.2542 ms
+2026-06-04 02:29:04.732 -07:00 [INF] HTTP GET /machines responded 200 in 4.7104 ms
+2026-06-04 02:29:04.872 -07:00 [INF] HTTP GET /machines responded 200 in 4.1152 ms
+2026-06-04 02:29:06.055 -07:00 [INF] HTTP GET /credential-types responded 200 in 18.4556 ms
+2026-06-04 02:29:06.385 -07:00 [INF] HTTP GET /credentials responded 200 in 5.0573 ms
+2026-06-04 02:29:06.563 -07:00 [INF] HTTP GET /credentials responded 200 in 5.2332 ms
+2026-06-04 02:29:06.963 -07:00 [INF] HTTP GET /credential-types responded 200 in 3.8623 ms
+2026-06-04 02:29:07.119 -07:00 [INF] HTTP GET /credential-types responded 200 in 3.4720 ms
+2026-06-04 02:29:08.563 -07:00 [INF] HTTP GET /credentials responded 200 in 3.9907 ms
+2026-06-04 02:29:08.740 -07:00 [INF] HTTP GET /credentials responded 200 in 7.3868 ms
+2026-06-04 02:29:09.219 -07:00 [INF] HTTP GET /machines responded 200 in 7.7529 ms
+2026-06-04 02:29:09.397 -07:00 [INF] HTTP GET /machines responded 200 in 7.5091 ms
+2026-06-04 02:29:09.690 -07:00 [INF] HTTP GET /clients responded 200 in 29.6580 ms
+2026-06-04 02:29:09.867 -07:00 [INF] HTTP GET /clients responded 200 in 7.0476 ms
+2026-06-04 02:29:10.304 -07:00 [INF] HTTP GET /clients responded 200 in 5.2820 ms
+2026-06-04 02:29:10.683 -07:00 [INF] HTTP GET /clients responded 200 in 8.1234 ms
+2026-06-04 02:29:10.868 -07:00 [INF] HTTP GET /clients responded 200 in 7.1320 ms
+2026-06-04 02:29:11.046 -07:00 [INF] HTTP GET /clients responded 200 in 7.1497 ms
+2026-06-04 02:29:11.400 -07:00 [INF] HTTP GET /request-access responded 200 in 9.8540 ms
+2026-06-04 02:29:11.579 -07:00 [INF] HTTP GET /request-access responded 200 in 5.9100 ms
+2026-06-04 02:29:15.957 -07:00 [INF] HTTP GET /clients responded 200 in 6.6297 ms
+2026-06-04 02:29:18.395 -07:00 [INF] HTTP GET / responded 200 in 80.1167 ms
+2026-06-04 02:29:24.523 -07:00 [INF] HTTP GET /request-access responded 200 in 4.3177 ms
+2026-06-04 02:29:24.866 -07:00 [INF] HTTP GET /clients responded 200 in 5.6871 ms
+2026-06-04 02:29:26.714 -07:00 [INF] HTTP GET /request-access responded 200 in 4.0236 ms
+2026-06-04 02:29:27.581 -07:00 [INF] HTTP GET /clients responded 200 in 7.0104 ms
+2026-06-04 02:29:34.468 -07:00 [INF] HTTP GET /machines responded 200 in 12.5866 ms
+2026-06-04 02:29:37.703 -07:00 [INF] HTTP GET /credentials responded 200 in 8.7026 ms
+2026-06-04 02:29:42.252 -07:00 [INF] HTTP GET /credential-types responded 200 in 8.1691 ms
+2026-06-04 02:29:42.662 -07:00 [INF] HTTP GET /credentials responded 200 in 7.5614 ms
+2026-06-04 02:29:51.388 -07:00 [INF] HTTP GET /credential-types responded 200 in 6.5540 ms
+2026-06-04 02:29:55.236 -07:00 [INF] HTTP GET /templates responded 200 in 21.4098 ms
+2026-06-04 02:30:50.183 -07:00 [INF] HTTP GET /templates responded 200 in 9.4421 ms
+2026-06-04 02:31:00.015 -07:00 [INF] HTTP GET /templates responded 200 in 6.1416 ms
+2026-06-04 02:34:47.177 -07:00 [INF] HTTP GET /templates responded 200 in 8.6782 ms
+2026-06-04 02:35:01.940 -07:00 [INF] HTTP GET /clients responded 200 in 9.0524 ms
+2026-06-04 02:35:04.664 -07:00 [INF] HTTP GET /templates responded 200 in 9.6209 ms
+2026-06-04 02:35:05.372 -07:00 [INF] HTTP GET /credential-types responded 200 in 7.0833 ms
+2026-06-04 02:35:06.340 -07:00 [INF] HTTP GET /credentials responded 200 in 6.6545 ms
+2026-06-04 02:35:07.285 -07:00 [INF] HTTP GET /machines responded 200 in 9.6896 ms
+2026-06-04 02:35:08.027 -07:00 [INF] HTTP GET /clients responded 200 in 7.1921 ms
+2026-06-04 02:35:12.476 -07:00 [INF] HTTP GET /audit responded 200 in 29.8174 ms
+2026-06-04 02:35:12.643 -07:00 [INF] HTTP GET /audit responded 200 in 3.4957 ms
+2026-06-04 02:35:14.075 -07:00 [INF] HTTP GET /sessions responded 200 in 29.1800 ms
+2026-06-04 02:35:14.894 -07:00 [INF] HTTP GET /users responded 200 in 39.4886 ms
+2026-06-04 02:35:15.404 -07:00 [INF] HTTP GET /roles responded 200 in 10.0596 ms
+2026-06-04 02:35:16.919 -07:00 [INF] HTTP GET /import-export responded 200 in 3.6564 ms
+2026-06-04 02:35:18.088 -07:00 [INF] HTTP GET /sessions responded 200 in 3.7235 ms
+2026-06-04 02:35:19.591 -07:00 [INF] HTTP GET /import-export responded 200 in 2.3668 ms
+2026-06-04 02:35:22.179 -07:00 [INF] HTTP GET /reports responded 200 in 4.4576 ms
+2026-06-04 02:35:29.168 -07:00 [INF] HTTP GET /bulk responded 200 in 11.8043 ms
+2026-06-04 02:35:31.752 -07:00 [INF] HTTP GET /templates responded 200 in 4.7749 ms
+2026-06-04 02:35:32.836 -07:00 [INF] HTTP GET /bulk responded 200 in 6.5057 ms
+2026-06-04 02:35:35.839 -07:00 [INF] HTTP GET /bulk responded 200 in 4.6523 ms
+2026-06-04 02:35:36.010 -07:00 [INF] HTTP GET /bulk responded 200 in 4.4415 ms
+2026-06-04 02:35:36.306 -07:00 [INF] HTTP GET /bulk responded 200 in 9.6948 ms
+2026-06-04 02:35:36.306 -07:00 [INF] HTTP GET /bulk responded 200 in 4.9554 ms
+2026-06-04 02:35:47.973 -07:00 [INF] HTTP GET /reports responded 200 in 1.9530 ms
+2026-06-04 02:36:46.133 -07:00 [INF] Now listening on: http://localhost:5005
+2026-06-04 02:36:46.149 -07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-06-04 02:36:46.149 -07:00 [INF] Hosting environment: Development
+2026-06-04 02:36:46.149 -07:00 [INF] Content root path: D:\La-Fabrica-de-Software\17 - Secure-access-platform\src\SecureAccess.Web
+2026-06-04 02:36:46.217 -07:00 [WRN] Failed to determine the https port for redirect.
+2026-06-04 02:36:46.261 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 3.9905 ms
+2026-06-04 02:36:46.277 -07:00 [INF] HTTP GET /reports responded 200 in 61.1261 ms
+2026-06-04 02:36:46.287 -07:00 [INF] HTTP GET /_blazor responded 101 in 21.6944 ms
+2026-06-04 02:36:46.300 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 3.6435 ms
+2026-06-04 02:36:46.309 -07:00 [INF] HTTP GET /css/modal.css responded 304 in 1.0675 ms
+2026-06-04 02:36:46.312 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 200 in 3.0764 ms
+2026-06-04 02:36:46.315 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.4758 ms
+2026-06-04 02:36:46.333 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 1.1256 ms
+2026-06-04 02:36:46.338 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.3152 ms
+2026-06-04 02:36:48.940 -07:00 [INF] HTTP GET /reports responded 200 in 8.1307 ms
+2026-06-04 02:36:48.945 -07:00 [INF] HTTP GET /_blazor responded 101 in 2603.5599 ms
+2026-06-04 02:36:48.957 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 1.3986 ms
+2026-06-04 02:36:48.960 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 304 in 0.1463 ms
+2026-06-04 02:36:48.961 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.3612 ms
+2026-06-04 02:36:48.977 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.4000 ms
+2026-06-04 02:36:48.981 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.3493 ms
+2026-06-04 02:36:50.195 -07:00 [INF] HTTP GET /reports responded 200 in 4.3033 ms
+2026-06-04 02:36:50.781 -07:00 [INF] HTTP GET /templates responded 200 in 62.7126 ms
+2026-06-04 02:37:09.645 -07:00 [INF] HTTP GET /bulk responded 200 in 31.0376 ms
+2026-06-04 02:37:10.672 -07:00 [INF] HTTP GET /templates responded 200 in 11.6337 ms
+2026-06-04 02:37:11.294 -07:00 [INF] HTTP GET /bulk responded 200 in 10.3465 ms
+2026-06-04 02:37:12.671 -07:00 [INF] HTTP GET /templates responded 200 in 11.7086 ms
+2026-06-04 02:37:39.469 -07:00 [INF] HTTP GET /templates responded 200 in 12.9061 ms
+2026-06-04 02:37:39.704 -07:00 [INF] HTTP GET /templates responded 200 in 7.9572 ms
+2026-06-04 02:38:00.611 -07:00 [INF] HTTP GET /templates responded 200 in 11.8707 ms
+2026-06-04 02:38:00.730 -07:00 [INF] HTTP GET /templates responded 200 in 7.4532 ms
+2026-06-04 02:38:05.237 -07:00 [INF] HTTP GET /bulk responded 200 in 9.6228 ms
+2026-06-04 02:38:05.391 -07:00 [INF] HTTP GET /bulk responded 200 in 4.6629 ms
+2026-06-04 02:38:05.742 -07:00 [INF] HTTP GET /templates responded 200 in 8.2884 ms
+2026-06-04 02:38:05.915 -07:00 [INF] HTTP GET /templates responded 200 in 7.0199 ms
+2026-06-04 02:38:14.057 -07:00 [WRN] Unhandled exception rendering component: Object reference not set to an instance of an object.
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at SecureAccess.Web.Components.Pages.Templates.<BuildRenderTree>b__0_13(String __value)
+   at Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.<>c__DisplayClass64_0`1.<CreateBinderCore>b__0(ChangeEventArgs e)
+   at InvokeStub_Action`1.Invoke(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Components.ComponentBase.CallStateHasChangedOnAsyncCompletion(Task task)
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+2026-06-04 02:38:14.076 -07:00 [ERR] Unhandled exception in circuit 'TS_B5UJoQAbVozFcdgkyMpGYww_R8vMnNqmpe7nsHjo'.
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at SecureAccess.Web.Components.Pages.Templates.<BuildRenderTree>b__0_13(String __value)
+   at Microsoft.AspNetCore.Components.EventCallbackFactoryBinderExtensions.<>c__DisplayClass64_0`1.<CreateBinderCore>b__0(ChangeEventArgs e)
+   at InvokeStub_Action`1.Invoke(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Components.ComponentBase.CallStateHasChangedOnAsyncCompletion(Task task)
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+2026-06-04 02:38:14.080 -07:00 [INF] HTTP GET /_blazor responded 101 in 85091.6489 ms
+2026-06-04 02:38:16.300 -07:00 [INF] HTTP GET /templates responded 200 in 8.2403 ms
+2026-06-04 02:38:16.304 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 0.4567 ms
+2026-06-04 02:38:16.317 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 304 in 0.4049 ms
+2026-06-04 02:38:16.317 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.7208 ms
+2026-06-04 02:38:16.336 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.6726 ms
+2026-06-04 02:38:16.340 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.6523 ms
+2026-06-04 02:38:17.576 -07:00 [INF] HTTP GET /templates responded 200 in 6.7078 ms
+2026-06-04 02:38:17.579 -07:00 [INF] HTTP GET /_blazor responded 101 in 1232.5867 ms
+2026-06-04 02:38:17.585 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 0.5403 ms
+2026-06-04 02:38:17.594 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.5225 ms
+2026-06-04 02:38:17.604 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.3452 ms
+2026-06-04 02:38:17.612 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.4408 ms
+2026-06-04 02:39:11.569 -07:00 [INF] HTTP GET /machines responded 200 in 51.6647 ms
+2026-06-04 02:39:16.959 -07:00 [INF] HTTP GET /clients responded 200 in 33.3991 ms
+2026-06-04 02:39:19.004 -07:00 [INF] HTTP GET /machines responded 200 in 7.6451 ms
+2026-06-04 02:39:19.528 -07:00 [INF] HTTP GET /credentials responded 200 in 18.6174 ms
+2026-06-04 02:39:21.517 -07:00 [INF] HTTP GET /credential-types responded 200 in 30.4327 ms
+2026-06-04 02:39:22.270 -07:00 [INF] HTTP GET /credentials responded 200 in 8.4415 ms
+2026-06-04 02:39:23.125 -07:00 [INF] HTTP GET /credential-types responded 200 in 6.7130 ms
+2026-06-04 02:39:24.501 -07:00 [INF] HTTP GET /templates responded 200 in 7.6449 ms
+2026-06-04 02:39:30.234 -07:00 [INF] HTTP GET /templates responded 200 in 15.6784 ms
+2026-06-04 02:39:35.283 -07:00 [INF] HTTP GET /bulk responded 200 in 7.3352 ms
+2026-06-04 02:39:36.360 -07:00 [INF] HTTP GET /reports responded 200 in 1.9297 ms
+2026-06-04 02:39:37.779 -07:00 [INF] HTTP GET /bulk responded 200 in 4.9710 ms
+2026-06-04 02:39:38.436 -07:00 [INF] HTTP GET /reports responded 200 in 1.8937 ms
+2026-06-04 02:39:38.556 -07:00 [INF] HTTP GET /reports responded 200 in 1.2285 ms
+2026-06-04 02:39:46.290 -07:00 [INF] HTTP GET /bulk responded 200 in 5.7093 ms
+2026-06-04 02:39:48.580 -07:00 [INF] HTTP GET /templates responded 200 in 5.7427 ms
+2026-06-04 02:39:51.230 -07:00 [INF] HTTP GET /credential-types responded 200 in 8.1547 ms
+2026-06-04 02:40:07.724 -07:00 [INF] HTTP GET /templates responded 200 in 9.5249 ms
+2026-06-04 02:40:09.171 -07:00 [INF] HTTP GET /bulk responded 200 in 8.5116 ms
+2026-06-04 02:40:09.346 -07:00 [INF] HTTP GET /bulk responded 200 in 4.3664 ms
+2026-06-04 02:40:09.538 -07:00 [INF] HTTP GET /bulk responded 200 in 4.8521 ms
+2026-06-04 02:40:09.884 -07:00 [INF] HTTP GET /templates responded 200 in 9.9240 ms
+2026-06-04 02:40:10.064 -07:00 [INF] HTTP GET /templates responded 200 in 10.6724 ms
+2026-06-04 02:40:10.679 -07:00 [INF] HTTP GET /bulk responded 200 in 9.4793 ms
+2026-06-04 02:40:10.863 -07:00 [INF] HTTP GET /bulk responded 200 in 4.8928 ms
+2026-06-04 02:40:11.705 -07:00 [INF] HTTP GET /templates responded 200 in 6.6796 ms
+2026-06-04 02:40:31.771 -07:00 [INF] HTTP GET /credential-types responded 200 in 5.8197 ms
+2026-06-04 02:40:31.903 -07:00 [INF] HTTP GET /credential-types responded 200 in 5.9362 ms
+2026-06-04 02:40:32.548 -07:00 [INF] HTTP GET /credentials responded 200 in 7.3549 ms
+2026-06-04 02:40:32.709 -07:00 [INF] HTTP GET /credentials responded 200 in 3.3681 ms
+2026-06-04 02:40:32.900 -07:00 [INF] HTTP GET /credentials responded 200 in 3.2313 ms
+2026-06-04 02:40:33.277 -07:00 [INF] HTTP GET /machines responded 200 in 8.3624 ms
+2026-06-04 02:40:33.448 -07:00 [INF] HTTP GET /machines responded 200 in 3.6223 ms
+2026-06-04 02:40:33.605 -07:00 [INF] HTTP GET /machines responded 200 in 3.1048 ms
+2026-06-04 02:40:33.987 -07:00 [INF] HTTP GET /clients responded 200 in 6.2789 ms
+2026-06-04 02:40:34.143 -07:00 [INF] HTTP GET /clients responded 200 in 2.6911 ms
+2026-06-04 02:40:34.573 -07:00 [INF] HTTP GET /machines responded 200 in 7.9191 ms
+2026-06-04 02:40:34.726 -07:00 [INF] HTTP GET /machines responded 200 in 3.4224 ms
+2026-06-04 02:40:34.870 -07:00 [INF] HTTP GET /machines responded 200 in 4.4108 ms
+2026-06-04 02:40:35.080 -07:00 [INF] HTTP GET /clients responded 200 in 6.1799 ms
+2026-06-04 02:40:35.232 -07:00 [INF] HTTP GET /clients responded 200 in 6.1288 ms
+2026-06-04 02:40:35.502 -07:00 [INF] HTTP GET /machines responded 200 in 8.8104 ms
+2026-06-04 02:40:35.758 -07:00 [INF] HTTP GET /machines responded 200 in 3.0236 ms
+2026-06-04 02:40:36.195 -07:00 [INF] HTTP GET /clients responded 200 in 6.2202 ms
+2026-06-04 02:40:36.325 -07:00 [INF] HTTP GET /clients responded 200 in 2.7066 ms
+2026-06-04 02:40:36.919 -07:00 [INF] HTTP GET /clients responded 200 in 3.0410 ms
+2026-06-04 02:40:37.093 -07:00 [INF] HTTP GET /clients responded 200 in 2.5172 ms
+2026-06-04 02:40:37.229 -07:00 [INF] HTTP GET /clients responded 200 in 2.6223 ms
+2026-06-04 02:40:37.482 -07:00 [INF] HTTP GET /machines responded 200 in 7.0714 ms
+2026-06-04 02:40:37.655 -07:00 [INF] HTTP GET /machines responded 200 in 3.5217 ms
+2026-06-04 02:40:38.277 -07:00 [INF] HTTP GET /machines responded 200 in 2.9690 ms
+2026-06-04 02:40:38.479 -07:00 [INF] HTTP GET /machines responded 200 in 4.5430 ms
+2026-06-04 02:40:38.815 -07:00 [INF] HTTP GET /clients responded 200 in 2.9777 ms
+2026-06-04 02:40:39.014 -07:00 [INF] HTTP GET /clients responded 200 in 3.0762 ms
+2026-06-04 02:40:40.635 -07:00 [INF] HTTP GET /clients responded 200 in 6.5622 ms
+2026-06-04 02:40:40.779 -07:00 [INF] HTTP GET /clients responded 200 in 6.3316 ms
+2026-06-04 02:40:41.252 -07:00 [INF] HTTP GET /machines responded 200 in 6.8451 ms
+2026-06-04 02:40:41.529 -07:00 [INF] HTTP GET /machines responded 200 in 7.3505 ms
+2026-06-04 02:40:41.716 -07:00 [INF] HTTP GET /machines responded 200 in 7.5848 ms
+2026-06-04 02:40:42.195 -07:00 [INF] HTTP GET /clients responded 200 in 4.3357 ms
+2026-06-04 02:40:42.362 -07:00 [INF] HTTP GET /clients responded 200 in 5.5981 ms
+2026-06-04 02:40:42.660 -07:00 [INF] HTTP GET /machines responded 200 in 7.7012 ms
+2026-06-04 02:40:42.826 -07:00 [INF] HTTP GET /machines responded 200 in 5.3583 ms
+2026-06-04 02:40:43.202 -07:00 [INF] HTTP GET /credentials responded 200 in 7.9198 ms
+2026-06-04 02:40:43.387 -07:00 [INF] HTTP GET /credentials responded 200 in 6.2041 ms
+2026-06-04 02:40:44.969 -07:00 [INF] HTTP GET /credential-types responded 200 in 6.5976 ms
+2026-06-04 02:40:45.144 -07:00 [INF] HTTP GET /credential-types responded 200 in 4.9330 ms
+2026-06-04 02:40:47.148 -07:00 [INF] HTTP GET /templates responded 200 in 6.0703 ms
+2026-06-04 02:40:47.294 -07:00 [INF] HTTP GET /templates responded 200 in 4.1986 ms
+2026-06-04 02:40:48.795 -07:00 [INF] HTTP GET /bulk responded 200 in 5.7637 ms
+2026-06-04 02:40:48.984 -07:00 [INF] HTTP GET /bulk responded 200 in 5.1786 ms
+2026-06-04 02:43:23.632 -07:00 [INF] HTTP GET /bulk responded 200 in 8.4608 ms
+2026-06-04 02:43:47.413 -07:00 [INF] HTTP GET /bulk responded 200 in 8.6977 ms
+2026-06-04 02:44:41.828 -07:00 [INF] Now listening on: http://localhost:5005
+2026-06-04 02:44:41.842 -07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-06-04 02:44:41.842 -07:00 [INF] Hosting environment: Development
+2026-06-04 02:44:41.842 -07:00 [INF] Content root path: D:\La-Fabrica-de-Software\17 - Secure-access-platform\src\SecureAccess.Web
+2026-06-04 02:44:41.954 -07:00 [WRN] Failed to determine the https port for redirect.
+2026-06-04 02:44:41.963 -07:00 [INF] HTTP GET / responded 302 in 9.6860 ms
+2026-06-04 02:44:41.964 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 10.9572 ms
+2026-06-04 02:44:42.003 -07:00 [INF] HTTP GET /login responded 200 in 32.8885 ms
+2026-06-04 02:44:42.020 -07:00 [INF] HTTP GET /lib/toastr/toastr.min.css responded 200 in 0.4001 ms
+2026-06-04 02:44:42.022 -07:00 [INF] HTTP GET /css/app-shell.css responded 200 in 4.5064 ms
+2026-06-04 02:44:42.022 -07:00 [INF] HTTP GET /css/modal.css responded 200 in 4.1344 ms
+2026-06-04 02:44:42.022 -07:00 [INF] HTTP GET /app.css responded 200 in 5.3856 ms
+2026-06-04 02:44:42.024 -07:00 [INF] HTTP GET /lib/jquery/jquery.min.js responded 200 in 0.8006 ms
+2026-06-04 02:44:42.024 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 200 in 4.4825 ms
+2026-06-04 02:44:42.024 -07:00 [INF] HTTP GET /bootstrap/bootstrap.min.css responded 200 in 6.8941 ms
+2026-06-04 02:44:42.024 -07:00 [INF] HTTP GET /lib/toastr/toastr.min.js responded 200 in 0.1981 ms
+2026-06-04 02:44:42.025 -07:00 [INF] HTTP GET /js/toast-flash.js responded 200 in 0.2524 ms
+2026-06-04 02:44:42.026 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 200 in 1.8660 ms
+2026-06-04 02:44:42.073 -07:00 [INF] HTTP GET /favicon.png responded 200 in 0.2856 ms
+2026-06-04 02:44:49.012 -07:00 [INF] HTTP GET /bulk responded 200 in 72.8936 ms
+2026-06-04 02:44:49.017 -07:00 [INF] HTTP GET /_blazor responded 101 in 7025.3280 ms
+2026-06-04 02:44:49.019 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 3.5387 ms
+2026-06-04 02:44:49.032 -07:00 [INF] HTTP GET /css/modal.css responded 304 in 0.5396 ms
+2026-06-04 02:44:49.033 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 200 in 1.6142 ms
+2026-06-04 02:44:49.034 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.3380 ms
+2026-06-04 02:44:49.049 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 1.2718 ms
+2026-06-04 02:44:49.052 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.4543 ms
+2026-06-04 02:45:05.449 -07:00 [INF] HTTP GET /bulk responded 200 in 13.6656 ms
+2026-06-04 02:45:05.607 -07:00 [INF] HTTP GET /bulk responded 200 in 5.3321 ms
+2026-06-04 02:45:06.095 -07:00 [INF] HTTP GET /reports responded 200 in 3.2013 ms
+2026-06-04 02:45:06.270 -07:00 [INF] HTTP GET /reports responded 200 in 1.8008 ms
+2026-06-04 02:45:06.826 -07:00 [INF] HTTP GET /reports responded 200 in 1.1118 ms
+2026-06-04 02:45:06.997 -07:00 [INF] HTTP GET /reports responded 200 in 1.3869 ms
+2026-06-04 02:45:07.571 -07:00 [INF] HTTP GET /bulk responded 200 in 4.8170 ms
+2026-06-04 02:45:07.742 -07:00 [INF] HTTP GET /bulk responded 200 in 3.4585 ms
+2026-06-04 02:45:08.192 -07:00 [INF] HTTP GET /reports responded 200 in 1.1666 ms
+2026-06-04 02:45:08.349 -07:00 [INF] HTTP GET /reports responded 200 in 1.1510 ms
+2026-06-04 02:45:09.602 -07:00 [INF] HTTP GET /bulk responded 200 in 4.8020 ms
+2026-06-04 02:45:09.773 -07:00 [INF] HTTP GET /bulk responded 200 in 3.6818 ms
+2026-06-04 02:45:10.293 -07:00 [INF] HTTP GET /reports responded 200 in 1.1931 ms
+2026-06-04 02:45:10.461 -07:00 [INF] HTTP GET /reports responded 200 in 1.1013 ms
+2026-06-04 02:45:11.682 -07:00 [INF] HTTP GET /clients responded 200 in 20.6280 ms
+2026-06-04 02:45:11.998 -07:00 [INF] HTTP GET /clients responded 200 in 3.8371 ms
+2026-06-04 02:45:12.209 -07:00 [INF] HTTP GET /clients responded 200 in 4.7320 ms
+2026-06-04 02:45:12.975 -07:00 [INF] HTTP GET /machines responded 200 in 18.5016 ms
+2026-06-04 02:45:13.128 -07:00 [INF] HTTP GET /machines responded 200 in 3.6478 ms
+2026-06-04 02:45:13.317 -07:00 [INF] HTTP GET /machines responded 200 in 4.4853 ms
+2026-06-04 02:45:13.928 -07:00 [INF] HTTP GET /credentials responded 200 in 18.8430 ms
+2026-06-04 02:45:14.344 -07:00 [INF] HTTP GET /credentials responded 200 in 4.5284 ms
+2026-06-04 02:45:14.846 -07:00 [INF] HTTP GET /credential-types responded 200 in 18.2541 ms
+2026-06-04 02:45:15.015 -07:00 [INF] HTTP GET /credential-types responded 200 in 3.2517 ms
+2026-06-04 02:45:15.693 -07:00 [INF] HTTP GET /templates responded 200 in 19.2581 ms
+2026-06-04 02:45:15.862 -07:00 [INF] HTTP GET /templates responded 200 in 3.5834 ms
+2026-06-04 02:45:17.191 -07:00 [INF] HTTP GET /bulk responded 200 in 3.1909 ms
+2026-06-04 02:45:17.365 -07:00 [INF] HTTP GET /bulk responded 200 in 3.1533 ms
+2026-06-04 02:45:19.902 -07:00 [INF] HTTP GET /reports responded 200 in 1.1541 ms
+2026-06-04 02:45:20.101 -07:00 [INF] HTTP GET /reports responded 200 in 0.8698 ms
+2026-06-04 02:45:21.156 -07:00 [INF] HTTP GET /audit responded 200 in 17.0918 ms
+2026-06-04 02:45:21.340 -07:00 [INF] HTTP GET /audit responded 200 in 2.5185 ms
+2026-06-04 02:45:21.875 -07:00 [INF] HTTP GET /reports responded 200 in 0.7537 ms
+2026-06-04 02:45:22.101 -07:00 [INF] HTTP GET /reports responded 200 in 0.8618 ms
+2026-06-04 02:45:22.886 -07:00 [INF] HTTP GET /audit responded 200 in 2.3193 ms
+2026-06-04 02:45:31.311 -07:00 [INF] HTTP GET /reports responded 200 in 0.9128 ms
+2026-06-04 02:45:32.280 -07:00 [INF] HTTP GET /bulk responded 200 in 2.9692 ms
+2026-06-04 02:45:33.763 -07:00 [INF] HTTP GET /templates responded 200 in 3.2355 ms
+2026-06-04 02:45:33.934 -07:00 [INF] HTTP GET /templates responded 200 in 3.7683 ms
+2026-06-04 02:45:35.545 -07:00 [INF] HTTP GET /credential-types responded 200 in 3.5009 ms
+2026-06-04 02:45:36.587 -07:00 [INF] HTTP GET / responded 200 in 46.2175 ms
+2026-06-04 02:45:36.745 -07:00 [INF] HTTP GET / responded 200 in 16.3881 ms
+2026-06-04 02:45:37.135 -07:00 [INF] HTTP GET /request-access responded 200 in 6.0165 ms
+2026-06-04 02:45:37.303 -07:00 [INF] HTTP GET /request-access responded 200 in 3.2402 ms
+2026-06-04 02:45:37.673 -07:00 [INF] HTTP GET /clients responded 200 in 6.3247 ms
+2026-06-04 02:45:38.139 -07:00 [INF] HTTP GET /credentials responded 200 in 9.7713 ms
+2026-06-04 02:45:39.505 -07:00 [INF] HTTP GET /credential-types responded 200 in 5.8891 ms
+2026-06-04 02:45:40.428 -07:00 [INF] HTTP GET /credentials responded 200 in 7.1567 ms
+2026-06-04 02:45:40.718 -07:00 [INF] HTTP GET /machines responded 200 in 8.8142 ms
+2026-06-04 02:45:41.112 -07:00 [INF] HTTP GET /clients responded 200 in 6.1159 ms
+2026-06-04 02:45:42.188 -07:00 [INF] HTTP GET /machines responded 200 in 8.6400 ms
+2026-06-04 02:45:42.775 -07:00 [INF] HTTP GET /credentials responded 200 in 4.4976 ms
+2026-06-04 02:45:43.408 -07:00 [INF] HTTP GET /credential-types responded 200 in 5.3537 ms
+2026-06-04 02:45:44.761 -07:00 [INF] HTTP GET /credentials responded 200 in 3.5502 ms
+2026-06-04 02:45:45.553 -07:00 [INF] HTTP GET /credential-types responded 200 in 3.2013 ms
+2026-06-04 02:45:46.203 -07:00 [INF] HTTP GET /templates responded 200 in 5.2835 ms
+2026-06-04 02:45:47.031 -07:00 [INF] HTTP GET /bulk responded 200 in 2.6308 ms
+2026-06-04 02:45:48.159 -07:00 [INF] HTTP GET /reports responded 200 in 1.0644 ms
+2026-06-04 02:48:10.251 -07:00 [INF] HTTP GET /reports responded 200 in 0.8213 ms
+2026-06-04 02:48:16.919 -07:00 [INF] HTTP GET /reports responded 200 in 0.7360 ms
+2026-06-04 02:48:20.163 -07:00 [INF] HTTP GET /reports responded 200 in 0.7292 ms
+2026-06-04 02:48:38.913 -07:00 [INF] HTTP GET /audit responded 200 in 3.9000 ms
+2026-06-04 02:48:39.451 -07:00 [INF] HTTP GET /reports responded 200 in 0.6673 ms
+2026-06-04 02:48:40.915 -07:00 [INF] HTTP GET /clients responded 200 in 6.0163 ms
+2026-06-04 02:48:41.620 -07:00 [INF] HTTP GET /machines responded 200 in 8.0724 ms
+2026-06-04 02:48:42.678 -07:00 [INF] HTTP GET /credentials responded 200 in 4.3059 ms
+2026-06-04 02:48:44.015 -07:00 [INF] HTTP GET /credential-types responded 200 in 4.6533 ms
+2026-06-04 02:48:45.553 -07:00 [INF] HTTP GET /templates responded 200 in 4.1579 ms
+2026-06-04 02:48:47.332 -07:00 [INF] HTTP GET /bulk responded 200 in 2.7935 ms
+2026-06-04 02:48:48.977 -07:00 [INF] HTTP GET /bulk responded 200 in 3.1361 ms
+2026-06-04 02:48:51.533 -07:00 [INF] HTTP GET /reports responded 200 in 0.6247 ms
+2026-06-04 02:48:57.389 -07:00 [INF] HTTP GET /reports responded 200 in 0.6634 ms
+2026-06-04 02:48:58.519 -07:00 [INF] HTTP GET /audit responded 200 in 4.9400 ms
+2026-06-04 02:48:59.397 -07:00 [INF] HTTP GET /sessions responded 200 in 18.0405 ms
+2026-06-04 02:49:00.765 -07:00 [INF] HTTP GET /sessions responded 200 in 3.7729 ms
+2026-06-04 02:49:01.281 -07:00 [INF] HTTP GET /roles responded 200 in 12.6596 ms
+2026-06-04 02:49:02.315 -07:00 [INF] HTTP GET /users responded 200 in 23.9711 ms
+2026-06-04 02:49:03.446 -07:00 [INF] HTTP GET /users responded 200 in 2.8722 ms
+2026-06-04 02:49:03.615 -07:00 [INF] HTTP GET /roles responded 200 in 2.8418 ms
+2026-06-04 02:49:04.024 -07:00 [INF] HTTP GET /users responded 200 in 2.9302 ms
+2026-06-04 02:49:04.529 -07:00 [INF] HTTP GET /sessions responded 200 in 3.3497 ms
+2026-06-04 02:49:05.251 -07:00 [INF] HTTP GET /audit responded 200 in 5.7842 ms
+2026-06-04 02:49:06.116 -07:00 [INF] HTTP GET /bulk responded 200 in 7.6701 ms
+2026-06-04 02:49:06.197 -07:00 [INF] HTTP GET /bulk responded 200 in 4.3757 ms
+2026-06-04 02:49:06.614 -07:00 [INF] HTTP GET /templates responded 200 in 8.3053 ms
+2026-06-04 02:49:07.062 -07:00 [INF] HTTP GET /credential-types responded 200 in 7.8200 ms
+2026-06-04 02:49:07.643 -07:00 [INF] HTTP GET /credentials responded 200 in 6.5804 ms
+2026-06-04 02:49:08.091 -07:00 [INF] HTTP GET /machines responded 200 in 7.8624 ms
+2026-06-04 02:52:32.774 -07:00 [INF] Now listening on: http://localhost:5005
+2026-06-04 02:52:32.788 -07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-06-04 02:52:32.788 -07:00 [INF] Hosting environment: Development
+2026-06-04 02:52:32.788 -07:00 [INF] Content root path: D:\La-Fabrica-de-Software\17 - Secure-access-platform\src\SecureAccess.Web
+2026-06-04 02:52:32.874 -07:00 [WRN] Failed to determine the https port for redirect.
+2026-06-04 02:52:32.992 -07:00 [INF] HTTP GET /machines responded 200 in 117.4161 ms
+2026-06-04 02:52:33.004 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 5.3266 ms
+2026-06-04 02:52:33.027 -07:00 [INF] HTTP GET /css/modal.css responded 304 in 1.2056 ms
+2026-06-04 02:52:33.032 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 200 in 6.4857 ms
+2026-06-04 02:52:33.032 -07:00 [INF] HTTP GET /js/download.js responded 200 in 0.8711 ms
+2026-06-04 02:52:33.035 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 2.3576 ms
+2026-06-04 02:52:33.046 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.9917 ms
+2026-06-04 02:52:33.055 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 2.8883 ms
+2026-06-04 02:52:35.683 -07:00 [INF] HTTP GET /machines responded 200 in 17.2256 ms
+2026-06-04 02:52:35.695 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 4.2891 ms
+2026-06-04 02:52:35.695 -07:00 [INF] HTTP GET /_blazor responded 101 in 2634.2132 ms
+2026-06-04 02:52:35.709 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 304 in 0.1906 ms
+2026-06-04 02:52:35.712 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.7547 ms
+2026-06-04 02:52:35.725 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.3442 ms
+2026-06-04 02:52:35.729 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.8569 ms
+2026-06-04 02:52:36.668 -07:00 [INF] HTTP GET /machines responded 200 in 9.4225 ms
+2026-06-04 02:52:36.672 -07:00 [INF] HTTP GET /_blazor responded 101 in 939.6013 ms
+2026-06-04 02:52:36.680 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 0.5201 ms
+2026-06-04 02:52:36.691 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.3096 ms
+2026-06-04 02:52:36.705 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.2823 ms
+2026-06-04 02:52:36.713 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.3949 ms
+2026-06-04 02:52:37.669 -07:00 [INF] HTTP GET /credentials responded 200 in 19.8838 ms
+2026-06-04 02:52:38.328 -07:00 [INF] HTTP GET /machines responded 200 in 4.8759 ms
+2026-06-04 02:52:38.724 -07:00 [INF] HTTP GET /clients responded 200 in 17.5321 ms
+2026-06-04 02:52:40.910 -07:00 [INF] HTTP GET /machines responded 200 in 16.2371 ms
+2026-06-04 02:52:41.952 -07:00 [INF] HTTP GET /credentials responded 200 in 18.3088 ms
+2026-06-04 02:52:43.209 -07:00 [INF] HTTP GET /credential-types responded 200 in 30.1324 ms
+2026-06-04 02:52:44.413 -07:00 [INF] HTTP GET /templates responded 200 in 41.1286 ms
+2026-06-04 02:52:45.986 -07:00 [INF] HTTP GET /bulk responded 200 in 14.2992 ms
+2026-06-04 02:52:47.290 -07:00 [INF] HTTP GET /reports responded 200 in 44.5519 ms
+2026-06-04 02:52:59.886 -07:00 [INF] HTTP GET /audit responded 200 in 32.3529 ms
+2026-06-04 02:53:00.664 -07:00 [INF] HTTP GET /sessions responded 200 in 26.5218 ms
+2026-06-04 02:53:01.658 -07:00 [INF] HTTP GET /reports responded 200 in 5.8590 ms
+2026-06-04 02:53:07.071 -07:00 [INF] HTTP GET /audit responded 200 in 5.3354 ms
+2026-06-04 02:53:08.077 -07:00 [INF] HTTP GET /sessions responded 200 in 3.7950 ms
+2026-06-04 02:53:08.942 -07:00 [INF] HTTP GET /import-export responded 200 in 3.3732 ms
+2026-06-04 02:53:11.216 -07:00 [INF] HTTP GET /users responded 200 in 34.8306 ms
+2026-06-04 02:53:11.628 -07:00 [INF] HTTP GET /roles responded 200 in 14.6789 ms
+2026-06-04 02:53:12.066 -07:00 [INF] HTTP GET /users responded 200 in 4.3777 ms
+2026-06-04 02:53:12.536 -07:00 [INF] HTTP GET /import-export responded 200 in 2.6128 ms
+2026-06-04 02:53:17.703 -07:00 [INF] HTTP GET /request-access responded 200 in 10.5197 ms
+2026-06-04 02:53:20.435 -07:00 [INF] HTTP GET /import-export responded 200 in 1.8231 ms
+2026-06-04 02:55:38.184 -07:00 [INF] HTTP GET /import-export responded 200 in 2.2454 ms
+2026-06-04 02:56:01.668 -07:00 [INF] HTTP GET /import-export responded 200 in 1.0569 ms
+2026-06-04 02:57:17.192 -07:00 [INF] Now listening on: http://localhost:5005
+2026-06-04 02:57:17.207 -07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-06-04 02:57:17.208 -07:00 [INF] Hosting environment: Development
+2026-06-04 02:57:17.208 -07:00 [INF] Content root path: D:\La-Fabrica-de-Software\17 - Secure-access-platform\src\SecureAccess.Web
+2026-06-04 02:57:17.275 -07:00 [WRN] Failed to determine the https port for redirect.
+2026-06-04 02:57:17.336 -07:00 [INF] HTTP GET /import-export responded 200 in 62.8779 ms
+2026-06-04 02:57:17.349 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 4.7345 ms
+2026-06-04 02:57:17.374 -07:00 [INF] HTTP GET /js/download.js responded 304 in 0.1222 ms
+2026-06-04 02:57:17.376 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 200 in 4.7815 ms
+2026-06-04 02:57:17.377 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 1.4052 ms
+2026-06-04 02:57:17.396 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.9272 ms
+2026-06-04 02:57:17.404 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 2.6412 ms
+2026-06-04 02:57:24.289 -07:00 [INF] HTTP GET /download/clients responded 200 in 46.4833 ms
+2026-06-04 02:57:24.333 -07:00 [INF] HTTP GET /download/clients responded 200 in 34.4388 ms
+2026-06-04 02:57:39.402 -07:00 [ERR] HTTP GET /download/clients responded 500 in 2.0078 ms
+Microsoft.AspNetCore.Http.BadHttpRequestException: Failed to bind parameter "ExportFormat format" from "Csv?".
+   at lambda_method336(Closure, Object, HttpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2026-06-04 02:57:39.407 -07:00 [ERR] An unhandled exception has occurred while executing the request.
+Microsoft.AspNetCore.Http.BadHttpRequestException: Failed to bind parameter "ExportFormat format" from "Csv?".
+   at lambda_method336(Closure, Object, HttpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-06-04 02:57:39.428 -07:00 [INF] HTTP GET /_blazor responded 101 in 22018.5300 ms
+2026-06-04 02:57:39.435 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 1.7581 ms
+2026-06-04 02:57:39.450 -07:00 [INF] HTTP GET /favicon.ico responded 404 in 0.8018 ms
+2026-06-04 02:57:40.713 -07:00 [ERR] HTTP GET /download/clients responded 500 in 0.8541 ms
+Microsoft.AspNetCore.Http.BadHttpRequestException: Failed to bind parameter "ExportFormat format" from "Csv?".
+   at lambda_method336(Closure, Object, HttpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2026-06-04 02:57:40.714 -07:00 [ERR] An unhandled exception has occurred while executing the request.
+Microsoft.AspNetCore.Http.BadHttpRequestException: Failed to bind parameter "ExportFormat format" from "Csv?".
+   at lambda_method336(Closure, Object, HttpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-06-04 02:57:41.099 -07:00 [ERR] HTTP GET /download/clients responded 500 in 1.2587 ms
+Microsoft.AspNetCore.Http.BadHttpRequestException: Failed to bind parameter "ExportFormat format" from "Csv?".
+   at lambda_method336(Closure, Object, HttpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2026-06-04 02:57:41.101 -07:00 [ERR] An unhandled exception has occurred while executing the request.
+Microsoft.AspNetCore.Http.BadHttpRequestException: Failed to bind parameter "ExportFormat format" from "Csv?".
+   at lambda_method336(Closure, Object, HttpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-06-04 02:57:43.035 -07:00 [INF] HTTP GET /import-export responded 200 in 24.1270 ms
+2026-06-04 02:57:43.054 -07:00 [INF] HTTP GET /css/modal.css responded 304 in 0.2203 ms
+2026-06-04 02:57:43.054 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 304 in 0.2205 ms
+2026-06-04 02:57:43.057 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.4797 ms
+2026-06-04 02:57:43.066 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.4671 ms
+2026-06-04 02:57:43.077 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.6734 ms
+2026-06-04 02:57:43.807 -07:00 [INF] HTTP GET /import-export responded 200 in 11.0181 ms
+2026-06-04 02:57:43.811 -07:00 [INF] HTTP GET /_blazor responded 101 in 731.0082 ms
+2026-06-04 02:57:43.825 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 4.9581 ms
+2026-06-04 02:57:43.825 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.2828 ms
+2026-06-04 02:57:43.830 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.4551 ms
+2026-06-04 02:57:43.840 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 1.2231 ms
+2026-06-04 02:57:44.194 -07:00 [INF] HTTP GET /import-export responded 200 in 2.1903 ms
+2026-06-04 02:57:44.198 -07:00 [INF] HTTP GET /_blazor responded 101 in 353.6022 ms
+2026-06-04 02:57:44.206 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 0.8906 ms
+2026-06-04 02:57:44.215 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.4847 ms
+2026-06-04 02:57:44.221 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.5044 ms
+2026-06-04 02:57:44.228 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.4544 ms
+2026-06-04 02:57:44.595 -07:00 [INF] HTTP GET /import-export responded 200 in 2.3907 ms
+2026-06-04 02:57:44.598 -07:00 [INF] HTTP GET /_blazor responded 101 in 366.5651 ms
+2026-06-04 02:57:44.610 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 0.4952 ms
+2026-06-04 02:57:44.613 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.3644 ms
+2026-06-04 02:57:44.618 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.3112 ms
+2026-06-04 02:57:44.623 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.3853 ms
+2026-06-04 02:57:50.057 -07:00 [INF] HTTP GET /import-export responded 200 in 2.3363 ms
+2026-06-04 02:57:50.061 -07:00 [INF] HTTP GET /_blazor responded 101 in 5432.1549 ms
+2026-06-04 02:57:50.068 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 0.4250 ms
+2026-06-04 02:57:50.077 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 304 in 0.3459 ms
+2026-06-04 02:57:50.077 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.3617 ms
+2026-06-04 02:57:50.088 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.4112 ms
+2026-06-04 02:57:50.093 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.4255 ms
+2026-06-04 02:57:50.694 -07:00 [INF] HTTP GET /import-export responded 200 in 1.3241 ms
+2026-06-04 02:57:50.698 -07:00 [INF] HTTP GET /_blazor responded 101 in 600.6204 ms
+2026-06-04 02:57:50.700 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 1.1093 ms
+2026-06-04 02:57:50.713 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.3413 ms
+2026-06-04 02:57:50.719 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.3033 ms
+2026-06-04 02:57:50.727 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.2983 ms
+2026-06-04 02:57:50.980 -07:00 [INF] HTTP GET /import-export responded 200 in 1.8368 ms
+2026-06-04 02:57:50.984 -07:00 [INF] HTTP GET /_blazor responded 101 in 254.1252 ms
+2026-06-04 02:57:50.990 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 0.4044 ms
+2026-06-04 02:57:50.997 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.3238 ms
+2026-06-04 02:57:51.004 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.2462 ms
+2026-06-04 02:57:51.012 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.3196 ms
+2026-06-04 02:57:51.258 -07:00 [INF] HTTP GET /import-export responded 200 in 2.1488 ms
+2026-06-04 02:57:51.261 -07:00 [INF] HTTP GET /_blazor responded 101 in 245.4841 ms
+2026-06-04 02:57:51.271 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 0.6694 ms
+2026-06-04 02:57:51.276 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.4638 ms
+2026-06-04 02:57:51.280 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.2374 ms
+2026-06-04 02:57:51.287 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.3552 ms
+2026-06-04 02:58:06.028 -07:00 [INF] HTTP GET /sessions responded 200 in 36.9475 ms
+2026-06-04 02:58:21.906 -07:00 [INF] Application is shutting down...
+2026-06-04 02:58:21.906 -07:00 [INF] HTTP GET /_blazor responded 101 in 30613.4867 ms
+2026-06-04 02:58:40.095 -07:00 [INF] Now listening on: http://localhost:5005
+2026-06-04 02:58:40.108 -07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-06-04 02:58:40.109 -07:00 [INF] Hosting environment: Development
+2026-06-04 02:58:40.109 -07:00 [INF] Content root path: D:\La-Fabrica-de-Software\17 - Secure-access-platform\src\SecureAccess.Web
+2026-06-04 02:58:40.223 -07:00 [WRN] Failed to determine the https port for redirect.
+2026-06-04 02:58:40.234 -07:00 [INF] HTTP GET / responded 302 in 11.0104 ms
+2026-06-04 02:58:40.276 -07:00 [INF] HTTP GET /login responded 200 in 35.5857 ms
+2026-06-04 02:58:40.302 -07:00 [INF] HTTP GET /css/modal.css responded 304 in 2.1427 ms
+2026-06-04 02:58:40.302 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.8411 ms
+2026-06-04 02:58:40.304 -07:00 [INF] HTTP GET /js/download.js responded 200 in 2.8317 ms
+2026-06-04 02:58:40.308 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 200 in 8.7000 ms
+2026-06-04 02:58:43.785 -07:00 [INF] HTTP GET /sessions responded 200 in 69.3570 ms
+2026-06-04 02:58:43.793 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 4.5534 ms
+2026-06-04 02:58:43.804 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 304 in 0.1502 ms
+2026-06-04 02:58:43.804 -07:00 [INF] HTTP GET /js/download.js responded 304 in 0.0610 ms
+2026-06-04 02:58:43.806 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.3006 ms
+2026-06-04 02:58:43.821 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 1.2722 ms
+2026-06-04 02:58:43.827 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 2.7815 ms
+2026-06-04 02:58:45.228 -07:00 [INF] HTTP GET /import-export responded 200 in 6.6311 ms
+2026-06-04 03:05:30.251 -07:00 [INF] HTTP GET /import-export responded 200 in 3.6549 ms
+2026-06-04 03:05:36.915 -07:00 [INF] HTTP GET /import-export responded 200 in 1.7073 ms
+2026-06-04 03:14:10.223 -07:00 [INF] HTTP GET /import-export responded 200 in 2.5385 ms
+2026-06-04 03:14:16.878 -07:00 [INF] HTTP GET /import-export responded 200 in 1.3357 ms
+2026-06-04 03:22:50.208 -07:00 [INF] HTTP GET /import-export responded 200 in 1.3032 ms
+2026-06-04 03:22:56.933 -07:00 [INF] HTTP GET /import-export responded 200 in 1.3829 ms
+2026-06-04 03:25:04.120 -07:00 [INF] HTTP GET /import-export responded 200 in 1.1361 ms
+2026-06-04 03:25:44.486 -07:00 [INF] HTTP GET /app.css responded 200 in 0.3416 ms
+2026-06-04 03:25:44.487 -07:00 [INF] HTTP GET /bootstrap/bootstrap.min.css responded 200 in 1.5095 ms
+2026-06-04 03:25:44.487 -07:00 [INF] HTTP GET /css/app-shell.css responded 200 in 0.2327 ms
+2026-06-04 03:25:44.489 -07:00 [INF] HTTP GET /css/modal.css responded 200 in 0.2580 ms
+2026-06-04 03:25:44.490 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 200 in 0.4228 ms
+2026-06-04 03:25:44.492 -07:00 [INF] HTTP GET /lib/toastr/toastr.min.css responded 200 in 0.1362 ms
+2026-06-04 03:25:44.492 -07:00 [INF] HTTP GET /favicon.png responded 200 in 0.1016 ms
+2026-06-04 03:25:47.040 -07:00 [INF] HTTP GET /import-export responded 200 in 2.6767 ms
+2026-06-04 03:25:47.046 -07:00 [INF] HTTP GET /app.css responded 200 in 0.1740 ms
+2026-06-04 03:25:47.046 -07:00 [INF] HTTP GET /css/app-shell.css responded 200 in 0.1756 ms
+2026-06-04 03:25:47.046 -07:00 [INF] HTTP GET /bootstrap/bootstrap.min.css responded 200 in 0.7334 ms
+2026-06-04 03:25:47.050 -07:00 [INF] HTTP GET /css/modal.css responded 200 in 0.2186 ms
+2026-06-04 03:25:47.053 -07:00 [INF] HTTP GET /lib/toastr/toastr.min.css responded 200 in 0.1732 ms
+2026-06-04 03:25:47.053 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 200 in 0.7274 ms
+2026-06-04 03:25:47.236 -07:00 [INF] HTTP GET /import-export responded 200 in 3.8316 ms
+2026-06-04 03:25:47.528 -07:00 [INF] HTTP GET /import-export responded 200 in 1.5429 ms
+2026-06-04 03:25:47.649 -07:00 [INF] HTTP GET /import-export responded 200 in 3.0837 ms
+2026-06-04 03:25:47.785 -07:00 [INF] HTTP GET /app.css responded 200 in 0.2079 ms
+2026-06-04 03:25:47.786 -07:00 [INF] HTTP GET /bootstrap/bootstrap.min.css responded 200 in 0.5546 ms
+2026-06-04 03:25:47.786 -07:00 [INF] HTTP GET /css/app-shell.css responded 200 in 0.1929 ms
+2026-06-04 03:25:47.789 -07:00 [INF] HTTP GET /css/modal.css responded 200 in 0.1219 ms
+2026-06-04 03:25:47.790 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 200 in 0.3583 ms
+2026-06-04 03:25:47.792 -07:00 [INF] HTTP GET /lib/toastr/toastr.min.css responded 200 in 0.1137 ms
+2026-06-04 03:25:48.420 -07:00 [INF] HTTP GET /import-export responded 200 in 1.0182 ms
+2026-06-04 03:25:48.429 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 200 in 0.6043 ms
+2026-06-04 03:25:48.794 -07:00 [INF] HTTP GET /app.css responded 200 in 0.2706 ms
+2026-06-04 03:25:48.794 -07:00 [INF] HTTP GET /css/app-shell.css responded 200 in 0.1518 ms
+2026-06-04 03:25:48.794 -07:00 [INF] HTTP GET /bootstrap/bootstrap.min.css responded 200 in 1.2824 ms
+2026-06-04 03:25:48.799 -07:00 [INF] HTTP GET /css/modal.css responded 200 in 0.2096 ms
+2026-06-04 03:25:48.799 -07:00 [INF] HTTP GET /lib/toastr/toastr.min.css responded 200 in 0.1096 ms
+2026-06-04 03:25:48.799 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 200 in 0.7715 ms
+2026-06-04 03:26:40.919 -07:00 [INF] HTTP GET /import-export responded 200 in 1.1137 ms
+2026-06-04 03:26:40.924 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 1.8701 ms
+2026-06-04 03:26:40.925 -07:00 [INF] HTTP GET /_blazor responded 101 in 1677092.1626 ms
+2026-06-04 03:26:40.944 -07:00 [INF] HTTP GET /css/app-shell.css responded 200 in 0.2339 ms
+2026-06-04 03:26:40.944 -07:00 [INF] HTTP GET /app.css responded 200 in 0.3172 ms
+2026-06-04 03:26:40.944 -07:00 [INF] HTTP GET /bootstrap/bootstrap.min.css responded 200 in 1.1670 ms
+2026-06-04 03:26:40.945 -07:00 [INF] HTTP GET /css/modal.css responded 200 in 0.2346 ms
+2026-06-04 03:26:40.947 -07:00 [INF] HTTP GET /lib/toastr/toastr.min.css responded 200 in 0.1049 ms
+2026-06-04 03:26:40.947 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 200 in 0.6501 ms
+2026-06-04 03:26:40.949 -07:00 [INF] HTTP GET /lib/toastr/toastr.min.js responded 200 in 0.1258 ms
+2026-06-04 03:26:40.950 -07:00 [INF] HTTP GET /lib/jquery/jquery.min.js responded 200 in 0.3659 ms
+2026-06-04 03:26:40.950 -07:00 [INF] HTTP GET /js/toast-flash.js responded 200 in 0.1389 ms
+2026-06-04 03:26:40.950 -07:00 [INF] HTTP GET /js/download.js responded 200 in 0.1659 ms
+2026-06-04 03:26:40.952 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 200 in 1.2709 ms
+2026-06-04 03:26:40.977 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.4138 ms
+2026-06-04 03:26:40.983 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.3675 ms
+2026-06-04 03:26:40.988 -07:00 [INF] HTTP GET /favicon.png responded 200 in 0.2837 ms
+2026-06-04 03:26:42.499 -07:00 [INF] HTTP GET /import-export responded 200 in 1.0332 ms
+2026-06-04 03:26:42.506 -07:00 [INF] HTTP GET /_blazor responded 101 in 1517.1455 ms
+2026-06-04 03:26:42.516 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 0.8321 ms
+2026-06-04 03:26:42.521 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.4128 ms
+2026-06-04 03:26:42.533 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.2390 ms
+2026-06-04 03:26:42.542 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.3680 ms
+2026-06-04 03:26:43.032 -07:00 [INF] HTTP GET /import-export responded 200 in 1.0235 ms
+2026-06-04 03:26:43.038 -07:00 [INF] HTTP GET /_blazor responded 101 in 490.8033 ms
+2026-06-04 03:26:43.044 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 0.3528 ms
+2026-06-04 03:26:43.047 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.2281 ms
+2026-06-04 03:26:43.060 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 0.1889 ms
+2026-06-04 03:26:43.071 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 0.2877 ms
+2026-06-04 03:26:53.693 -07:00 [INF] HTTP GET /users responded 200 in 865.4399 ms
+2026-06-04 03:26:55.538 -07:00 [INF] HTTP GET /roles responded 200 in 14.9402 ms
+2026-06-04 03:26:56.273 -07:00 [INF] HTTP GET /users responded 200 in 4.9991 ms
+2026-06-04 03:26:56.910 -07:00 [INF] HTTP GET /import-export responded 200 in 2.0014 ms
+2026-06-04 03:26:57.644 -07:00 [INF] HTTP GET /sessions responded 200 in 8.7299 ms
+2026-06-04 03:26:59.013 -07:00 [INF] HTTP GET /import-export responded 200 in 1.2584 ms
+2026-06-04 03:26:59.874 -07:00 [INF] HTTP GET /audit responded 200 in 30.1339 ms
+2026-06-04 03:27:00.448 -07:00 [INF] HTTP GET /reports responded 200 in 47.2309 ms
+2026-06-04 03:27:00.997 -07:00 [INF] HTTP GET /bulk responded 200 in 41.1203 ms
+2026-06-04 03:27:01.829 -07:00 [INF] HTTP GET /templates responded 200 in 48.9974 ms
+2026-06-04 03:27:02.545 -07:00 [INF] HTTP GET /credential-types responded 200 in 28.8305 ms
+2026-06-04 03:27:03.552 -07:00 [INF] HTTP GET /credentials responded 200 in 21.5646 ms
+2026-06-04 03:27:04.838 -07:00 [INF] HTTP GET /machines responded 200 in 34.1369 ms
+2026-06-04 03:27:06.262 -07:00 [INF] HTTP GET /clients responded 200 in 34.8984 ms
+2026-06-04 03:27:09.487 -07:00 [INF] HTTP GET /request-access responded 200 in 11.9697 ms
+2026-06-04 03:27:11.139 -07:00 [INF] HTTP GET / responded 200 in 81.8020 ms
+2026-06-04 03:29:44.209 -07:00 [INF] HTTP GET / responded 200 in 8.0469 ms
+2026-06-04 03:30:15.053 -07:00 [INF] HTTP GET / responded 200 in 7.5183 ms
+2026-06-04 03:30:21.397 -07:00 [INF] HTTP GET / responded 200 in 8.3624 ms
+2026-06-04 03:30:28.485 -07:00 [INF] HTTP GET / responded 200 in 9.6917 ms
+2026-06-04 03:30:33.229 -07:00 [INF] HTTP GET / responded 200 in 7.2619 ms
+2026-06-04 04:07:05.584 -07:00 [INF] Now listening on: http://localhost:5005
+2026-06-04 04:07:05.598 -07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-06-04 04:07:05.598 -07:00 [INF] Hosting environment: Development
+2026-06-04 04:07:05.598 -07:00 [INF] Content root path: D:\La-Fabrica-de-Software\17 - Secure-access-platform\src\SecureAccess.Web
+2026-06-04 04:07:05.711 -07:00 [WRN] Failed to determine the https port for redirect.
+2026-06-04 04:07:05.722 -07:00 [INF] HTTP GET / responded 302 in 10.4710 ms
+2026-06-04 04:07:05.759 -07:00 [INF] HTTP GET /login responded 200 in 32.1624 ms
+2026-06-04 04:07:05.780 -07:00 [INF] HTTP GET /js/download.js responded 304 in 1.5922 ms
+2026-06-04 04:07:05.780 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 1.9691 ms
+2026-06-04 04:07:05.780 -07:00 [INF] HTTP GET /css/modal.css responded 304 in 1.5758 ms
+2026-06-04 04:07:05.786 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 200 in 7.6132 ms
+2026-06-04 04:07:09.732 -07:00 [INF] HTTP GET / responded 302 in 0.7685 ms
+2026-06-04 04:07:09.738 -07:00 [INF] HTTP GET /login responded 200 in 3.4149 ms
+2026-06-04 04:07:09.755 -07:00 [INF] HTTP POST /_blazor/disconnect responded 200 in 4.4636 ms
+2026-06-04 04:07:09.763 -07:00 [INF] HTTP GET /css/modal.css responded 304 in 0.3811 ms
+2026-06-04 04:07:09.764 -07:00 [INF] HTTP GET /js/download.js responded 304 in 0.1544 ms
+2026-06-04 04:07:09.764 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.2504 ms
+2026-06-04 04:07:09.764 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 200 in 2.0596 ms
+2026-06-04 04:07:13.007 -07:00 [WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+2026-06-04 04:07:13.449 -07:00 [INF] HTTP POST /account/login responded 302 in 494.2536 ms
+2026-06-04 04:07:13.725 -07:00 [INF] HTTP GET / responded 200 in 272.7879 ms
+2026-06-04 04:07:13.744 -07:00 [INF] HTTP GET /SecureAccess.Web.styles.css responded 304 in 0.1592 ms
+2026-06-04 04:07:13.744 -07:00 [INF] HTTP GET /_framework/blazor.web.js responded 304 in 0.5864 ms
+2026-06-04 04:07:13.767 -07:00 [INF] HTTP GET /_blazor/initializers responded 200 in 2.5390 ms
+2026-06-04 04:07:13.784 -07:00 [INF] HTTP POST /_blazor/negotiate responded 200 in 6.1362 ms
+2026-06-04 04:07:24.640 -07:00 [INF] HTTP GET /audit responded 200 in 29.5313 ms
+2026-06-04 04:07:26.529 -07:00 [INF] HTTP GET / responded 200 in 32.6414 ms
+2026-06-04 04:07:43.276 -07:00 [INF] HTTP GET /clients responded 200 in 42.8502 ms
+2026-06-04 04:07:44.102 -07:00 [INF] HTTP GET /machines responded 200 in 66.9278 ms
+2026-06-04 04:07:44.457 -07:00 [INF] HTTP GET /credentials responded 200 in 32.0284 ms
+2026-06-04 04:07:45.174 -07:00 [INF] HTTP GET /credential-types responded 200 in 30.3566 ms
+2026-06-04 04:07:45.610 -07:00 [INF] HTTP GET /templates responded 200 in 27.7411 ms
+2026-06-04 04:07:46.025 -07:00 [INF] HTTP GET /bulk responded 200 in 8.9952 ms
+2026-06-04 04:07:46.499 -07:00 [INF] HTTP GET /reports responded 200 in 24.9517 ms
+2026-06-04 04:07:47.189 -07:00 [INF] HTTP GET /audit responded 200 in 4.6686 ms
+2026-06-04 04:07:47.621 -07:00 [INF] HTTP GET /sessions responded 200 in 27.5758 ms
+2026-06-04 04:07:48.020 -07:00 [INF] HTTP GET /import-export responded 200 in 5.5488 ms
+2026-06-04 04:07:48.480 -07:00 [INF] HTTP GET /users responded 200 in 39.1157 ms
+2026-06-04 04:07:48.994 -07:00 [INF] HTTP GET /roles responded 200 in 15.6636 ms
+2026-06-04 04:07:49.539 -07:00 [INF] HTTP GET /users responded 200 in 4.0663 ms
+2026-06-04 04:07:50.870 -07:00 [INF] HTTP GET /roles responded 200 in 4.1711 ms
+2026-06-04 04:08:01.329 -07:00 [INF] Application is shutting down...
+2026-06-04 04:08:01.329 -07:00 [INF] HTTP GET /_blazor responded 101 in 47542.4022 ms

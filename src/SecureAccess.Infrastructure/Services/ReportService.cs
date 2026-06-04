@@ -11,6 +11,29 @@ public class ReportService : IReportService
 
     public ReportService(AppDbContext db) => _db = db;
 
+    public async Task<ReportListStats> GetListStatsAsync(CancellationToken ct = default)
+    {
+        var q = _db.AuditLogs.AsNoTracking().Where(a => a.Action == AuditAction.CredentialAccess);
+        var now = DateTime.UtcNow;
+        var monthStart = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        return new ReportListStats
+        {
+            TotalLogs = await q.CountAsync(ct),
+            LogsThisMonth = await q.CountAsync(a => a.TimestampUtc >= monthStart, ct),
+            UniqueUsers = await q
+                .Where(a => a.UserName != null && a.UserName != "")
+                .Select(a => a.UserName!)
+                .Distinct()
+                .CountAsync(ct),
+            UniqueMachines = await q
+                .Where(a => a.MachineId != null)
+                .Select(a => a.MachineId!.Value)
+                .Distinct()
+                .CountAsync(ct)
+        };
+    }
+
     private IQueryable<Domain.Entities.AuditLog> AccessQuery(ReportFilter f)
     {
         var q = _db.AuditLogs.AsNoTracking().Where(a => a.Action == AuditAction.CredentialAccess);
